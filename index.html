@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blog Mock + TLDR Accordion Widget</title>
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --card: #0f1621;
+      --card2: #0d141e;
+      --text: #e6edf6;
+      --muted: #9fb0c3;
+      --border: rgba(255,255,255,.08);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --accent: #5dd6ff;
+      --accent2:#b38bff;
+      --good: #4ade80;
+      --warn: #fbbf24;
+      --radius: 14px;
+      --max: 980px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: radial-gradient(1200px 600px at 30% -10%, rgba(93,214,255,.18), transparent 60%),
+                  radial-gradient(900px 500px at 80% 0%, rgba(179,139,255,.14), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+
+    .topbar{
+      position: sticky; top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(11,15,20,.72);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .brand-badge{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 8px 20px rgba(93,214,255,.2);
+    }
+    .nav{
+      display:flex; gap: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .nav a{
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+    .nav a:hover{ background: rgba(255,255,255,.06); color: var(--text); }
+
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap: 22px;
+    }
+
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns: 1fr; }
+      .sidebar{ order: 2; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 35%), var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .article{
+      padding: 26px;
+    }
+
+    .kicker{
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1{
+      margin: 10px 0 10px;
+      line-height: 1.1;
+      font-size: 40px;
+      letter-spacing: -0.02em;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .hero{
+      height: 260px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(135deg, rgba(93,214,255,.18), rgba(179,139,255,.12)),
+        radial-gradient(900px 260px at 30% 30%, rgba(255,255,255,.12), transparent 55%),
+        var(--card2);
+      margin: 18px 0 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:after{
+      content:"";
+      position:absolute;
+      inset:-30%;
+      background: conic-gradient(from 180deg, rgba(93,214,255,.18), rgba(179,139,255,.12), rgba(93,214,255,.18));
+      filter: blur(30px);
+      opacity: .6;
+      transform: rotate(10deg);
+    }
+
+    .prose p{
+      color: rgba(230,237,246,.92);
+      margin: 14px 0;
+      font-size: 16px;
+    }
+
+    .prose h2{
+      margin-top: 26px;
+      margin-bottom: 10px;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar{
+      display:flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .side-card{
+      padding: 16px;
+    }
+
+    .side-title{
+      font-weight: 700;
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: rgba(230,237,246,.95);
+    }
+
+    .side-list{
+      margin: 0; padding: 0;
+      list-style: none;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .side-list li{
+      padding: 10px 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    /* TLDR Accordion Widget */
+    .tldr{
+      margin: 18px 0 8px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(135deg, rgba(93,214,255,.10), rgba(179,139,255,.08)), rgba(255,255,255,.02);
+      overflow: hidden;
+    }
+
+    .tldr-header{
+      width: 100%;
+      padding: 14px 16px;
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(11,15,20,.25);
+      border: 0;
+      color: var(--text);
+      cursor: pointer;
+      text-align:left;
+    }
+
+    .tldr-left{
+      display:flex;
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .bolt{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, rgba(93,214,255,.95), rgba(179,139,255,.90));
+      box-shadow: 0 10px 24px rgba(93,214,255,.18);
+      flex: 0 0 auto;
+      font-weight: 900;
+      color: rgba(11,15,20,.92);
+    }
+
+    .tldr-title{
+      display:flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .tldr-title strong{
+      font-size: 14px;
+      letter-spacing: .01em;
+    }
+
+    .tldr-title span{
+      font-size: 13px;
+      color: rgba(230,237,246,.80);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 560px;
+    }
+
+    .tldr-right{
+      display:flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+      color: rgba(230,237,246,.82);
+      font-size: 13px;
+    }
+
+    .chev{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      display:grid;
+      place-items:center;
+      transition: transform .18s ease;
+    }
+
+    .tldr[aria-expanded="true"] .chev{
+      transform: rotate(180deg);
+    }
+
+    .tldr-panel{
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .24s ease;
+      background: rgba(11,15,20,.18);
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .tldr[aria-expanded="true"] .tldr-panel{
+      max-height: 520px; /* mock value; in prod you can measure scrollHeight */
+    }
+
+    .tldr-body{
+      padding: 14px 16px 16px;
+      display:grid;
+      gap: 12px;
+    }
+
+    .summary{
+      display:grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(230,237,246,.92);
+      font-size: 14px;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .chip{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: rgba(230,237,246,.90);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+    }
+    .chip:hover{
+      background: rgba(255,255,255,.07);
+      border-color: rgba(93,214,255,.28);
+    }
+    .chip:active{ transform: translateY(1px); }
+
+    .cta-row{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .btn{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: rgba(230,237,246,.95);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 650;
+      font-size: 14px;
+      display:inline-flex;
+      gap: 10px;
+      align-items: center;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,.07);
+      border-color: rgba(93,214,255,.30);
+    }
+
+    .btn.primary{
+      border: 1px solid rgba(93,214,255,.35);
+      background: linear-gradient(135deg, rgba(93,214,255,.18), rgba(179,139,255,.14));
+    }
+
+    .note{
+      color: rgba(159,176,195,.92);
+      font-size: 12px;
+    }
+
+    /* Optional: mock top ad slot */
+    .ad{
+      border-radius: 16px;
+      border: 1px dashed rgba(255,255,255,.18);
+      padding: 16px;
+      background: rgba(255,255,255,.02);
+      color: rgba(159,176,195,.85);
+      font-size: 13px;
+    }
+    .ad strong{ color: rgba(230,237,246,.92); }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-badge" aria-hidden="true"></div>
+        <div>MockBlog</div>
+      </div>
+      <nav class="nav">
+        <a href="#">News</a>
+        <a href="#">Guides</a>
+        <a href="#">Reviews</a>
+        <a href="#">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <article class="card article">
+      <div class="kicker">Tech / Opinion</div>
+      <h1>Why “Instant Summaries” Might Be the Best On-Page Feature in 2026</h1>
+
+      <div class="meta">
+        <span class="pill">By Jordan Writer</span>
+        <span class="pill">Feb 25, 2026</span>
+        <span class="pill">7 min read</span>
+      </div>
+
+      <!-- Mock top ad slot -->
+      <div class="ad" aria-label="Advertisement">
+        <strong>Ad slot</strong> (GAM/AdSense placement) — stays put. Accordion starts collapsed.
+      </div>
+
+      <!-- TLDR accordion widget -->
+      <section class="tldr" id="tldrWidget" aria-expanded="false">
+        <button class="tldr-header" type="button" id="tldrToggle" aria-controls="tldrPanel" aria-expanded="false">
+          <div class="tldr-left">
+            <div class="bolt" aria-hidden="true">⚡</div>
+            <div class="tldr-title">
+              <strong>Zipline Summary</strong>
+              <span>Tap to expand a cached TLDR + guided follow-ups</span>
+            </div>
+          </div>
+          <div class="tldr-right">
+            <span>30-sec read</span>
+            <div class="chev" aria-hidden="true">⌄</div>
+          </div>
+        </button>
+
+        <div class="tldr-panel" id="tldrPanel" role="region" aria-labelledby="tldrToggle">
+          <div class="tldr-body">
+            <ul class="summary">
+              <li>Inline summaries help capture skimmers without forcing a modal.</li>
+              <li>Guided chips convert passive readers into active “askers.”</li>
+              <li>Escalate to a full overlay only after intent is shown.</li>
+              <li>Keep it collapsed on load to avoid pushing ads below the fold.</li>
+            </ul>
+
+            <div class="chips" aria-label="Suggested follow-ups">
+              <button class="chip" type="button">What’s the controversy?</button>
+              <button class="chip" type="button">Key takeaways in plain English</button>
+              <button class="chip" type="button">Pros / cons for publishers</button>
+              <button class="chip" type="button">What’s the best UI pattern?</button>
+            </div>
+
+            <div class="cta-row">
+              <button class="btn primary" type="button">Ask about this article →</button>
+              <span class="note">Mock only. In prod, this would open a chat overlay.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="hero" aria-hidden="true"></div>
+
+      <div class="prose">
+        <p>
+          Most readers don’t actually read. They scan, scroll, bounce, and move on. That’s not a moral failing —
+          it’s how the modern web is experienced. If you can deliver value in seconds, you can keep them longer.
+        </p>
+
+        <h2>Why an accordion works</h2>
+        <p>
+          A collapsed accordion doesn’t disrupt the page. When expanded by the user, it becomes an intentional action:
+          “I want more.” That intent unlocks deeper interactivity, like guided chips and (eventually) a chatbot.
+        </p>
+
+        <h2>How to avoid layout drama</h2>
+        <p>
+          Start collapsed. Render fast. Load the heavy chat only after interaction. Keep ad slots stable.
+          The result feels like editorial UX, not a bolted-on tool.
+        </p>
+
+        <h2>What you’d build next</h2>
+        <p>
+          In a real integration, those chips would map to specific question templates and return fast answers. After
+          one or two chip taps, you’d transition to a full overlay chat with a clean exit back to the article.
+        </p>
+      </div>
+    </article>
+
+    <aside class="sidebar">
+      <section class="card side-card">
+        <h3 class="side-title">Trending</h3>
+        <ul class="side-list">
+          <li>Why “Start Here” beats “Ask Anything”</li>
+          <li>Keeping ads stable with interactive UI</li>
+          <li>What publishers actually want from widgets</li>
+        </ul>
+      </section>
+
+      <section class="card side-card">
+        <h3 class="side-title">Newsletter</h3>
+        <p style="margin:0;color:var(--muted);font-size:14px;">
+          Weekly product/monetization ideas. No spam.
+        </p>
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          <input placeholder="Email" style="flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);color:var(--text);outline:none;">
+          <button class="btn" type="button">Join</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    (function(){
+      const widget = document.getElementById("tldrWidget");
+      const toggle = document.getElementById("tldrToggle");
+
+      toggle.addEventListener("click", () => {
+        const isOpen = widget.getAttribute("aria-expanded") === "true";
+        widget.setAttribute("aria-expanded", String(!isOpen));
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+      });
+
+      // Mock chip behavior
+      document.querySelectorAll(".chip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          alert("Mock: would open overlay and ask:\n\n" + btn.textContent);
+        });
+      });
+
+      document.querySelector(".btn.primary").addEventListener("click", () => {
+        alert("Mock: would open full chat overlay (with an X to close).");
+      });
+    })();
+  </script>
+</body>
+</html>
