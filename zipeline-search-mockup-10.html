@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zipline Search – Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:       #1a73e8;
+    --blue-dark:  #1558b0;
+    --blue-light: #e8f0fe;
+    --green:      #188038;
+    --text:       #202124;
+    --muted:      #5f6368;
+    --border:     #dadce0;
+    --bg:         #ffffff;
+    --ad-badge:   #006621;
+    --radius:     24px;
+    --shadow:     0 1px 6px rgba(32,33,36,.28);
+    --shadow-lg:  0 4px 24px rgba(32,33,36,.18);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f8f9fa;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────── */
+  .header {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+  .logo span:nth-child(1) { color: #4285F4; }
+  .logo span:nth-child(2) { color: #EA4335; }
+  .logo span:nth-child(3) { color: #FBBC05; }
+  .logo span:nth-child(4) { color: #4285F4; }
+  .logo span:nth-child(5) { color: #34A853; }
+
+  .search-bar {
+    flex: 1;
+    max-width: 680px;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 0 16px;
+    height: 44px;
+    background: var(--bg);
+    box-shadow: var(--shadow);
+    gap: 10px;
+    transition: box-shadow .2s;
+  }
+  .search-bar:focus-within { box-shadow: var(--shadow-lg); }
+  .search-bar svg { color: var(--muted); flex-shrink: 0; }
+  .search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    background: transparent;
+  }
+  .search-bar .clear-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); display: flex; align-items: center;
+    padding: 2px;
+  }
+  .search-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); display: flex; align-items: center;
+    padding: 4px; border-radius: 50%;
+    transition: background .15s;
+  }
+  .search-btn:hover { background: #f1f3f4; }
+
+  /* ── PAGE LAYOUT ──────────────────────────────────────── */
+  .page { max-width: 760px; margin: 0 auto; padding: 16px 16px 32px; }
+
+  /* ── USER BUBBLE ──────────────────────────────────────── */
+  .user-bubble {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  .user-bubble span {
+    background: var(--blue);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 18px 18px 4px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 75%;
+    line-height: 1.4;
+  }
+
+  /* ── AI ANSWER ────────────────────────────────────────── */
+  .answer-card {
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+
+  .answer-body { padding: 16px 18px; }
+  .answer-body p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .answer-body p em { font-style: italic; }
+
+  .answer-collapsed { /* shows only first paragraph */ }
+  .answer-extra {
+    display: none;
+    margin-top: 10px;
+  }
+  .answer-extra.open { display: block; }
+
+  .show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+  }
+  .show-more-btn:hover { text-decoration: underline; }
+  .show-more-btn svg { transition: transform .3s; }
+  .show-more-btn.open svg { transform: rotate(180deg); }
+
+  /* ── TAB BAR ──────────────────────────────────────────── */
+  .tab-bar {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    position: relative;
+    z-index: 1;
+    transition: border-radius .25s;
+  }
+  .tab-bar.panel-open {
+    border-radius: 14px 14px 0 0;
+    border-bottom-color: transparent;
+  }
+
+  .tab-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    cursor: pointer;
+    padding: 12px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+    position: relative;
+  }
+  .tab-btn:hover { background: var(--blue-light); }
+  .tab-btn.active { background: var(--blue); color: #fff; }
+  .tab-bar .tab-btn:first-child { border-radius: 14px 0 0 0; }
+  .tab-bar .tab-btn:last-child  { border-radius: 0 14px 0 0; }
+  .tab-bar:not(.panel-open) .tab-btn:first-child { border-radius: 28px 0 0 28px; }
+  .tab-bar:not(.panel-open) .tab-btn:last-child  { border-radius: 0 28px 28px 0; }
+  .tab-btn .chevron { transition: transform .3s; }
+  .tab-btn.open .chevron { transform: rotate(180deg); }
+
+  /* ── ACCORDION PANEL ──────────────────────────────────── */
+  .accordion {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    max-height: 0;
+    transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s;
+    opacity: 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,.07);
+  }
+  .accordion.open {
+    max-height: 900px;
+    opacity: 1;
+  }
+  .accordion-inner { padding: 16px 18px; }
+
+  /* ── PANEL CONTENT ────────────────────────────────────── */
+  /* Search Results */
+  .result-item { padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
+  .result-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .result-source {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .result-favicon {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #e8e8e8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #555;
+    flex-shrink: 0;
+  }
+  .result-domain { font-size: 12px; color: var(--muted); }
+  .result-title { font-size: 16px; color: var(--blue); text-decoration: none; line-height: 1.3; display: block; margin-bottom: 4px; }
+  .result-title:hover { text-decoration: underline; }
+  .result-snippet { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+  /* Images */
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 480px) { .image-grid { grid-template-columns: repeat(2, 1fr); } }
+  .image-card {
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 1;
+    background: #e8e8e8;
+  }
+  .image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .image-card-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,.55));
+    color: #fff; font-size: 10px; padding: 18px 6px 5px;
+    opacity: 0; transition: opacity .2s;
+  }
+  .image-card:hover .image-card-label { opacity: 1; }
+  .show-more-images {
+    display: block; width: 100%; margin-top: 12px;
+    text-align: center; color: var(--blue); font-size: 13px;
+    font-weight: 500; font-family: inherit;
+    background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px;
+    cursor: pointer; transition: background .15s;
+  }
+  .show-more-images:hover { background: var(--blue-light); }
+
+  /* Video */
+  .video-grid { display: flex; flex-direction: column; gap: 14px; }
+  .video-card {
+    display: flex; gap: 12px; align-items: flex-start;
+    cursor: pointer; border-radius: 8px; padding: 6px;
+    transition: background .15s;
+  }
+  .video-card:hover { background: #f8f9fa; }
+  .video-thumb {
+    width: 120px; height: 70px; flex-shrink: 0;
+    border-radius: 6px; background: #1a1a1a;
+    position: relative; overflow: hidden;
+  }
+  .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 30px; height: 30px; background: rgba(255,255,255,.9);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .play-btn::after {
+    content: ''; border-style: solid;
+    border-width: 7px 0 7px 12px;
+    border-color: transparent transparent transparent #333;
+    margin-left: 2px;
+  }
+  .video-info { flex: 1; min-width: 0; }
+  .video-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+  .video-meta { font-size: 12px; color: var(--muted); }
+  .video-duration {
+    position: absolute; bottom: 4px; right: 5px;
+    background: rgba(0,0,0,.75); color: #fff;
+    font-size: 10px; padding: 1px 4px; border-radius: 3px;
+  }
+
+  /* Maps */
+  .map-placeholder {
+    width: 100%; height: 200px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+    border-radius: 8px; position: relative; overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .map-grid-h {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .map-roads {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.8) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(255,255,255,.8) 2px, transparent 2px);
+    background-size: 120px 80px;
+    background-position: 30px 20px;
+  }
+  .map-pin {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-100%);
+  }
+  .map-pin-dot {
+    width: 16px; height: 16px; background: #EA4335;
+    border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+    box-shadow: 0 2px 6px rgba(0,0,0,.3); margin: 0 auto;
+  }
+  .map-pin-shadow {
+    width: 8px; height: 4px;
+    background: rgba(0,0,0,.25); border-radius: 50%;
+    margin: 2px auto 0;
+  }
+  .map-label {
+    text-align: center; font-size: 12px; color: var(--muted);
+    margin-bottom: 10px; font-style: italic;
+  }
+  .map-place { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .map-place:last-child { border-bottom: none; }
+  .map-place-name { font-size: 14px; font-weight: 500; color: var(--blue); }
+  .map-place-addr { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .map-place-meta { font-size: 12px; color: var(--muted); margin-top: 3px; display: flex; gap: 8px; align-items: center; }
+  .rating { color: #f9a825; }
+
+  /* ── ADS ──────────────────────────────────────────────── */
+  .ads-section { margin-top: 4px; }
+  .ad-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .5px;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 8px; padding: 0 2px;
+  }
+  .ad-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+  .ad-source {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+  }
+  .ad-favicon {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #f1f3f4; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .ad-favicon img { width: 100%; height: 100%; object-fit: contain; }
+  .ad-domain { font-size: 12px; color: var(--muted); }
+  .ad-domain-url { font-size: 11px; color: var(--muted); }
+  .ad-badge {
+    margin-left: auto; font-size: 10px; color: var(--muted);
+    border: 1px solid var(--border); padding: 1px 5px;
+    border-radius: 3px; flex-shrink: 0;
+  }
+  .ad-title { font-size: 16px; color: var(--blue); font-weight: 500; margin-bottom: 4px; }
+  .ad-title:hover { text-decoration: underline; cursor: pointer; }
+  .ad-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ── INLINE INPUT ─────────────────────────────────────── */
+  .chat-input-bar {
+    margin-bottom: 12px;
+  }
+  .answer-followup {
+    border-top: 1px solid var(--border);
+    padding: 10px 18px 12px;
+    background: #fafbfc;
+  }
+  .chat-input {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 0 14px;
+    height: 46px;
+    background: var(--bg);
+    gap: 8px;
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+  .chat-input:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-light);
+  }
+  .chat-input input {
+    flex: 1; border: none; outline: none;
+    font-family: inherit; font-size: 14px; background: transparent;
+  }
+  .chat-send-btn {
+    background: var(--blue); border: none; border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: background .15s, transform .1s;
+  }
+  .chat-send-btn:hover { background: var(--blue-dark); transform: scale(1.05); }
+
+  /* ── PLACEHOLDER AVATAR ─────────────────────────────────── */
+  .avatar-chip {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── RESPONSIVE ──────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .tab-btn { font-size: 12px; padding: 11px 4px; gap: 3px; }
+    .tab-btn span.label { display: none; }
+    .tab-btn svg { width: 15px; height: 15px; }
+    .video-thumb { width: 90px; height: 56px; }
+  }
+
+  /* ── UTIL ─────────────────────────────────────────────── */
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  /* ── PANEL QUERY LABEL ───────────────────────────────── */
+  .panel-query {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 16px;
+  }
+  .panel-query-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 500;
+    font-style: italic;
+    background: rgba(26,115,232,0.06);
+    border: 1px solid rgba(26,115,232,0.18);
+    padding: 6px 14px 6px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
+  }
+  .panel-query-icon {
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+
+  /* Fade panels in */
+  .panel-content { animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════════════════════ -->
+<header class="header">
+  <a class="logo" href="#">
+    <span>Z</span><span>i</span><span>p</span><span>l</span><span>i</span><span>n</span><span>e</span>
+  </a>
+  <div class="search-bar">
+    <!-- search icon -->
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" value="Tell me everything about Keanu Reeves" aria-label="Search" />
+    <button class="clear-btn" aria-label="Clear">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+    <button class="search-btn" aria-label="Search">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════ PAGE ══════════════════════════════════ -->
+<main class="page">
+
+  <!-- Tab Bar -->
+  <div class="tab-bar" role="tablist">
+    <button class="tab-btn" id="tab-answer" role="tab" onclick="handleTab('answer', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14h-2v-2h2zm0-4h-2V7h2z"/>
+      </svg>
+      <span class="label">AI Answer</span>
+    </button>
+
+    <div class="tab-divider"></div>
+
+    <button class="tab-btn" id="tab-search" role="tab" onclick="handleTab('search', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <span class="label">Search Results</span>
+    </button>
+
+    <div class="tab-divider"></div>
+
+    <button class="tab-btn" id="tab-images" role="tab" onclick="handleTab('images', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <span class="label">Images</span>
+    </button>
+
+    <div class="tab-divider"></div>
+
+    <button class="tab-btn" id="tab-video" role="tab" onclick="handleTab('video', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>
+      <span class="label">Video</span>
+    </button>
+
+    <div class="tab-divider"></div>
+
+    <button class="tab-btn" id="tab-maps" role="tab" onclick="handleTab('maps', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span class="label">Maps</span>
+    </button>
+  </div>
+
+  <!-- Accordion Panel -->
+  <div class="accordion" id="accordion">
+    <div class="accordion-inner" id="accordionInner">
+      <!-- content injected by JS -->
+    </div>
+  </div>
+
+  <!-- ── ADS (always visible below panels) ──────────────── -->
+  <div class="ads-section">
+    <p class="ad-label">Sponsored</p>
+
+    <div class="ad-card">
+      <div class="ad-source">
+        <div class="ad-favicon">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF9900">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ad-domain">Amazon.com</div>
+          <div class="ad-domain-url">https://www.amazon.com/shop/bio-memoirs</div>
+        </div>
+        <span class="ad-badge">Ad</span>
+      </div>
+      <div class="ad-title">Keanu Reeves Biography – Inspiring True Stories</div>
+      <div class="ad-desc">Discover must-read Keanu Reeves Biography from real people. Explore a vast selection at Amazon.</div>
+    </div>
+
+    <div class="ad-card">
+      <div class="ad-source">
+        <div class="ad-favicon" style="background:#e6f0ff;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#2563eb">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke="#fff" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ad-domain">IQ International</div>
+          <div class="ad-domain-url">https://blog.iqinternational.org/</div>
+        </div>
+        <span class="ad-badge">Ad</span>
+      </div>
+      <div class="ad-title">Keanu Reeves IQ Score – IQInternational.org Insights</div>
+      <div class="ad-desc">What is Keanu Reeves's IQ score, and how has it influenced his life? Did his intelligence play a role in his career success?</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════ PANEL TEMPLATES ══════════════════════ -->
+<template id="panel-answer">
+  <div class="panel-content">
+    <div class="panel-query"><div class="panel-query-inner"><svg class="panel-query-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Tell me everything about Keanu Reeves</div></div>
+    <p>
+      Keanu Charles Reeves is a Canadian actor, producer, and director, born in Beirut, Lebanon on September 2, 1964. He is best known for his roles in <em>Bill &amp; Ted's Excellent Adventure</em>, <em>Speed</em>, and the <em>Matrix</em> trilogy. He has also starred in the highly successful <em>John Wick</em> film series.
+    </p>
+
+    <div class="answer-extra" id="answerExtra">
+      <p style="margin-top:10px;">
+        Reeves's father, Samuel Nowlin Reeves Jr., is of English, Hawaiian, Chinese, and Portuguese descent, and his mother, Patricia Bond, is English. His father worked as a geologist. Reeves's parents divorced when he was three years old. He grew up largely in Toronto, Canada, and dropped out of high school to pursue his acting career. He made his feature film debut in <em>Youngblood</em> (1986) before landing his breakthrough role in <em>Bill &amp; Ted's Excellent Adventure</em> (1989).
+      </p>
+      <p style="margin-top:10px;">
+        Reeves became a major action star with <em>Speed</em> (1994). He has alternated between smaller and larger films, including <em>The Matrix</em> (1999), which was a significant success. Following <em>The Matrix</em> trilogy, he appeared in films such as <em>Something's Gotta Give</em> (2003), <em>The Lake House</em> (2006), and <em>Street Kings</em> (2008). He also starred in <em>Constantine</em> (2005) and directed <em>Man of Tai Chi</em> (2013). He played the title role in the successful action film <em>John Wick</em> (2014) and reprised it in <em>John Wick: Chapter 2</em> (2017) and subsequent sequels.
+      </p>
+      <p style="margin-top:10px;">
+        Reeves received a star on the Hollywood Walk of Fame on January 31, 2005, and was included in an ET online survey in 2006 as one of "America's Favorite Stars." He is widely regarded as one of Hollywood's most beloved and humble actors. He is also a producer, director, and a bassist in the band Dogstar.
+      </p>
+    </div>
+
+    <button class="show-more-btn" id="showMoreBtn" onclick="toggleShowMore()">
+      <span id="showMoreLabel">Show More</span>
+      <svg id="showMoreChevron" class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    </button>
+  </div>
+</template>
+
+<template id="panel-search">
+  <div class="panel-content">
+    <div class="panel-query"><div class="panel-query-inner"><svg class="panel-query-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Tell me everything about Keanu Reeves</div></div>
+    <div class="result-item">
+      <div class="result-source">
+        <div class="result-favicon" style="background:#4285F4;color:#fff;">W</div>
+        <span class="result-domain">en.wikipedia.org</span>
+      </div>
+      <a class="result-title" href="#">Keanu Reeves – Wikipedia</a>
+      <p class="result-snippet">Keanu Charles Reeves (/ kiːɑːnuː /; born September 2, 1964) is a Canadian actor and musician. The recipient of numerous accolades in a career on screen spanning four decades, he is known for his leading roles in action films, his amiable public image, and his…</p>
+    </div>
+
+    <div class="result-item">
+      <div class="result-source">
+        <div class="result-favicon" style="background:#006EB3;color:#fff;">B</div>
+        <span class="result-domain">britannica.com</span>
+      </div>
+      <a class="result-title" href="#">Keanu Reeves | Movies, Sonic, Matrix &amp; Facts | Britannica</a>
+      <p class="result-snippet">Keanu Reeves (born September 2, 1964, Beirut, Lebanon) is a Canadian actor who found his greatest success in comedy, science-fiction, and action movies. Reeves's early hits included Bill &amp; Ted's Excellent Adventure (1989) and Speed (1994), and he later starred in two blockbuster…</p>
+    </div>
+
+    <div class="result-item">
+      <div class="result-source">
+        <div class="result-favicon" style="background:#1a1a1a;color:#fff;">b</div>
+        <span class="result-domain">biography.com</span>
+      </div>
+      <a class="result-title" href="#">Keanu Reeves – Early Life, Movies &amp; 'The Matrix' – Biography</a>
+      <p class="result-snippet">Actor Keanu Reeves has starred in the movies 'Bill &amp; Ted's Excellent Adventure,' 'Speed,' 'The Matrix' and 'John Wick,' among many other projects.</p>
+    </div>
+
+    <div class="result-item" style="border-bottom:none;padding-bottom:0;">
+      <div class="result-source">
+        <div class="result-favicon" style="background:#F5C518;color:#000;">i</div>
+        <span class="result-domain">imdb.com</span>
+      </div>
+      <a class="result-title" href="#">Keanu Reeves – IMDb</a>
+      <p class="result-snippet">Keanu Charles Reeves was born in Beirut, Lebanon on September 2, 1964. His father Samuel Nowlin Reeves, Jr. worked as a geologist while his mother, Patricia (née Taylor) was a costume designer and performer.</p>
+    </div>
+
+    <button class="show-more-images" style="margin-top:14px;">Show more results on Google →</button>
+  </div>
+</template>
+
+<template id="panel-images">
+  <div class="panel-content">
+    <div class="panel-query"><div class="panel-query-inner"><svg class="panel-query-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Tell me everything about Keanu Reeves</div></div>
+    <div class="image-grid">
+      <!-- Using placeholder gradient images since we can't fetch real photos -->
+      <div class="image-card">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;">
+          <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="image-card-label">Wikipedia</div>
+      </div>
+      <div class="image-card">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#2c3e50,#4ca1af);display:flex;align-items:center;justify-content:center;">
+          <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="image-card-label">IMDb</div>
+      </div>
+      <div class="image-card">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;">
+          <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="image-card-label">Biography</div>
+      </div>
+      <div class="image-card">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#232526,#414345);display:flex;align-items:center;justify-content:center;">
+          <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="image-card-label">Variety</div>
+      </div>
+      <div class="image-card">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#3a3a3a,#5a5a5a);display:flex;align-items:center;justify-content:center;">
+          <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="image-card-label">The New Yorker</div>
+      </div>
+      <div class="image-card">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#0f3460,#16213e);display:flex;align-items:center;justify-content:center;">
+          <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="image-card-label">Rotten Tomatoes</div>
+      </div>
+    </div>
+    <button class="show-more-images">Show more images on Google →</button>
+  </div>
+</template>
+
+<template id="panel-video">
+  <div class="panel-content">
+    <div class="panel-query"><div class="panel-query-inner"><svg class="panel-query-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Tell me everything about Keanu Reeves</div></div>
+    <div class="video-grid">
+
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#1a1a2e,#e43f5a);">
+          <div class="play-btn"></div>
+          <span class="video-duration">2:45</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title">Keanu Reeves Full Biography – From Lebanon to Hollywood</div>
+          <div class="video-meta">YouTube · 1.2M views · 3 days ago</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#0f3460,#533483);">
+          <div class="play-btn"></div>
+          <span class="video-duration">8:12</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title">The Story of John Wick – How Keanu Reeves Reinvented Action Cinema</div>
+          <div class="video-meta">YouTube · 4.7M views · 2 months ago</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#232526,#414345);">
+          <div class="play-btn"></div>
+          <span class="video-duration">14:38</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title">Keanu Reeves Interview: Career, The Matrix, and What's Next</div>
+          <div class="video-meta">Variety · 870K views · 1 week ago</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#134e5e,#71b280);">
+          <div class="play-btn"></div>
+          <span class="video-duration">3:22</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title">Why Everyone Loves Keanu Reeves – The Most Wholesome Man in Hollywood</div>
+          <div class="video-meta">YouTube · 9.3M views · 5 months ago</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<template id="panel-maps">
+  <div class="panel-content">
+    <div class="panel-query"><div class="panel-query-inner"><svg class="panel-query-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Tell me everything about Keanu Reeves</div></div>
+    <!-- Illustrated map placeholder -->
+    <div class="map-placeholder">
+      <div class="map-grid-h"></div>
+      <div class="map-roads"></div>
+      <div class="map-pin">
+        <div class="map-pin-dot"></div>
+        <div class="map-pin-shadow"></div>
+      </div>
+      <!-- decorative road labels -->
+      <div style="position:absolute;top:30px;left:20px;font-size:9px;color:rgba(0,0,0,.4);font-weight:600;transform:rotate(-5deg);">Hollywood Blvd</div>
+      <div style="position:absolute;bottom:40px;right:30px;font-size:9px;color:rgba(0,0,0,.4);font-weight:600;">Sunset Blvd</div>
+      <div style="position:absolute;top:50%;left:10px;font-size:9px;color:rgba(0,0,0,.4);font-weight:600;transform:translateY(-50%) rotate(-90deg);">Vine St</div>
+    </div>
+    <p class="map-label">Locations related to "Keanu Reeves" · Los Angeles, CA</p>
+
+    <div class="map-place">
+      <div class="map-place-name">Hollywood Walk of Fame – Keanu Reeves Star</div>
+      <div class="map-place-addr">6925 Hollywood Blvd, Los Angeles, CA 90028</div>
+      <div class="map-place-meta">
+        <span class="rating">★★★★★</span>
+        <span>4.8 · Landmark</span>
+        <span>·</span>
+        <span style="color:var(--green);">Open</span>
+      </div>
+    </div>
+
+    <div class="map-place">
+      <div class="map-place-name">TCL Chinese Theatre – Matrix Premiere Venue</div>
+      <div class="map-place-addr">6925 Hollywood Blvd, Hollywood, CA 90028</div>
+      <div class="map-place-meta">
+        <span class="rating">★★★★☆</span>
+        <span>4.5 · Movie Theater</span>
+        <span>·</span>
+        <span style="color:var(--green);">Open until 11 PM</span>
+      </div>
+    </div>
+
+    <div class="map-place" style="border-bottom:none;">
+      <div class="map-place-name">Dolby Theatre – Academy Awards Venue</div>
+      <div class="map-place-addr">6801 Hollywood Blvd, Hollywood, CA 90028</div>
+      <div class="map-place-meta">
+        <span class="rating">★★★★☆</span>
+        <span>4.4 · Performing Arts</span>
+        <span>·</span>
+        <span style="color:#c62828;">Closed</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- ═══════════════ JS ══════════════════════════════════════ -->
+<script>
+  let activeTab = null;
+
+  function toggleShowMore() {
+    const extra = document.getElementById('answerExtra');
+    const btn   = document.getElementById('showMoreBtn');
+    const label = document.getElementById('showMoreLabel');
+    const open  = extra.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    label.textContent = open ? 'Show Less' : 'Show More';
+  }
+
+  function handleTab(tabId, btn) {
+    const accordion = document.getElementById('accordion');
+    const inner     = document.getElementById('accordionInner');
+    const tabBar    = document.querySelector('.tab-bar');
+
+    if (activeTab === tabId) {
+      accordion.classList.remove('open');
+      tabBar.classList.remove('panel-open');
+      btn.classList.remove('active');
+      activeTab = null;
+      return;
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = tabId;
+
+    const templateMap = {
+      answer: 'panel-answer',
+      search: 'panel-search',
+      images: 'panel-images',
+      video:  'panel-video',
+      maps:   'panel-maps',
+    };
+
+    const tmplId = templateMap[tabId];
+    const tmpl = document.getElementById(tmplId);
+    inner.innerHTML = '';
+    inner.appendChild(tmpl.content.cloneNode(true));
+
+    accordion.classList.add('open');
+    tabBar.classList.add('panel-open');
+
+    setTimeout(() => {
+      accordion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+
+  // Pre-open AI Answer on load
+  window.addEventListener('DOMContentLoaded', () => {
+    handleTab('answer', document.getElementById('tab-answer'));
+  });
+</script>
+
+</body>
+</html>
