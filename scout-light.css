@@ -86,31 +86,30 @@
   letter-spacing: -0.01em;
 }
 
-/* Carousel shell — gradient border, white interior */
+/* Carousel shell — bold gradient border, white interior */
 .zipline-scout__carousel {
   display: flex;
   align-items: stretch;
   gap: 8px;
   background: #ffffff;
   border-radius: 12px;
-  padding: 12px 8px;
+  padding: 14px 10px;
   position: relative;
-  border: 2px solid transparent;
+  border: 2.5px solid transparent;
   background-clip: padding-box;
   box-shadow:
-    0 4px 20px rgba(8,145,178,0.12),
-    0 1px 4px rgba(0,0,0,0.05);
+    0 4px 20px rgba(8,145,178,0.15),
+    0 1px 4px rgba(0,0,0,0.06);
 }
 
-/* True gradient border via pseudo-element */
+/* Bold gradient border via pseudo-element */
 .zipline-scout__carousel::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #0891b2 0%, #67e8f9 50%, #0891b2 100%);
+  inset: -2.5px;
+  border-radius: 14.5px;
+  background: linear-gradient(120deg, #0369a1 0%, #22d3ee 45%, #0891b2 100%);
   z-index: -1;
-  opacity: 0.9;
 }
 
 /* Nav arrows */
@@ -147,23 +146,23 @@
 
 .zipline-scout__track {
   display: flex;
-  gap: var(--zs-gap);
-  padding: 4px 2px;
+  gap: 10px;
+  padding: 4px 4px;
 }
 
 /* Question cards */
 .zipline-scout__card {
   flex: 0 0 auto;
-  width: min(280px, 78vw);
-  min-height: 72px;
-  padding: 14px 16px;
+  width: min(260px, 72vw);
+  min-height: 84px;
+  padding: 16px 18px;
   text-align: left;
   background: var(--zs-pub-card);
   border: 1px solid var(--zs-pub-border);
   border-radius: 8px;
   color: var(--zs-pub-text);
   font-size: 0.875rem;
-  line-height: 1.4;
+  line-height: 1.6;
   cursor: pointer;
   scroll-snap-align: start;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
