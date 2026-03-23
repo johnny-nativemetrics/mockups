@@ -97,7 +97,7 @@
   border: 3px solid transparent;
   background:
     linear-gradient(#ffffff, #ffffff) padding-box,
-    linear-gradient(120deg, #0369a1 0%, #22d3ee 45%, #0891b2 100%) border-box;
+    linear-gradient(120deg, #38bdf8 0%, #67e8f9 50%, #22d3ee 100%) border-box;
   box-shadow:
     0 4px 20px rgba(8,145,178,0.15),
     0 1px 4px rgba(0,0,0,0.06);
@@ -163,7 +163,7 @@
 .zipline-scout__card:hover {
   background: var(--zs-pub-card-hover);
   border-color: var(--zs-pub-accent);
-  box-shadow: 0 0 0 1px var(--zs-pub-accent), 0 2px 8px rgba(8,145,178,0.12);
+  box-shadow: 0 2px 10px rgba(8,145,178,0.18);
 }
 
 .zipline-scout__card-text {
