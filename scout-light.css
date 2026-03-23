@@ -141,6 +141,13 @@
   padding: 4px 4px;
 }
 
+/* Extra trailing space so last card can snap to left edge */
+.zipline-scout__track::after {
+  content: '';
+  flex: 0 0 1px;
+  padding-right: 24px;
+}
+
 /* Question cards */
 .zipline-scout__card {
   flex: 0 0 auto;
