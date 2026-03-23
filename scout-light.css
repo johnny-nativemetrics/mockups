@@ -94,7 +94,7 @@
   border-radius: 12px;
   padding: 14px 10px;
   position: relative;
-  border: 1.5px solid transparent;
+  border: 1px solid transparent;
   background:
     linear-gradient(#ffffff, #ffffff) padding-box,
     linear-gradient(120deg, #7dd3fc 0%, #a5f3fc 50%, #67e8f9 100%) border-box;
