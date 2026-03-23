@@ -1,13 +1,13 @@
 /*
- * scout-light.css
- * Publisher override for Zipline Scout — Light Editorial Theme
- * Load AFTER scout.css. Overrides dark defaults on both
- * the inline carousel and the fixed sidebar.
+ * scout-light.css  —  STANDALONE REPLACEMENT
+ * Full base styles + light editorial theme built in.
+ * Load this INSTEAD of scout.css. No second file needed.
  *
  * Accent:  #0891b2  (cyan-600)
  * Surface: #f7f6f3  (warm off-white)
  * Text:    #1c1917  (warm near-black)
  */
+
 
 /* ─────────────────────────────────────────
    DESIGN TOKENS
@@ -20,7 +20,6 @@
   --zs-pub-card:         #ffffff;
   --zs-pub-card-hover:   #f0f4f6;
   --zs-pub-border:       #e2dfd8;
-  --zs-pub-border-soft:  #ede9e3;
   --zs-pub-text:         #1c1917;
   --zs-pub-muted:        #6b7280;
   --zs-pub-muted-light:  #9ca3af;
@@ -31,11 +30,32 @@
 
 
 /* ─────────────────────────────────────────
-   CAROUSEL — INLINE ON PUBLISHER PAGE
+   BASE — INLINE CAROUSEL
    ───────────────────────────────────────── */
+.zipline-scout {
+  --zs-radius: 12px;
+  --zs-gap: 12px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  margin: 1.25rem 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* Force light theme regardless of --dark class */
-.zipline-scout--dark {
+.zipline-scout *,
+.zipline-scout *::before,
+.zipline-scout *::after {
+  box-sizing: border-box;
+}
+
+.zipline-scout__loading {
+  font-size: 0.875rem;
+  padding: 0.75rem 0;
+  color: var(--zs-pub-muted);
+}
+
+/* Force light tokens regardless of --dark / --light class */
+.zipline-scout--dark,
+.zipline-scout--light {
   --zs-bg:         var(--zs-pub-surface);
   --zs-card:       var(--zs-pub-card);
   --zs-card-hover: var(--zs-pub-card-hover);
@@ -45,31 +65,55 @@
   --zs-accent:     var(--zs-pub-accent);
 }
 
-/* Header: "More from Zipline Scout" */
-.zipline-scout__head-title {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--zs-pub-text);
+/* Header row */
+.zipline-scout__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .zipline-scout__head-star {
   color: var(--zs-pub-star);
+  font-size: 1rem;
+  line-height: 1;
 }
 
-/* Carousel outer shell — left accent stripe */
+.zipline-scout__head-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--zs-pub-text);
+  letter-spacing: -0.01em;
+}
+
+/* Carousel shell */
 .zipline-scout__carousel {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  background: var(--zs-pub-surface);
   border: 1px solid var(--zs-pub-border);
   border-left: 3px solid var(--zs-pub-accent);
-  background: var(--zs-pub-surface);
   border-radius: 10px;
-  padding: 10px 8px;
+  padding: 10px 6px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 /* Nav arrows */
 .zipline-scout__nav {
+  flex-shrink: 0;
+  width: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
   color: var(--zs-pub-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
 }
 
 .zipline-scout__nav:hover {
@@ -77,14 +121,37 @@
   background: var(--zs-pub-accent-dim);
 }
 
+/* Scrollable track */
+.zipline-scout__track-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.zipline-scout__track {
+  display: flex;
+  gap: var(--zs-gap);
+  padding: 4px 2px;
+}
+
 /* Question cards */
 .zipline-scout__card {
+  flex: 0 0 auto;
+  width: min(280px, 78vw);
+  min-height: 72px;
+  padding: 14px 16px;
+  text-align: left;
   background: var(--zs-pub-card);
   border: 1px solid var(--zs-pub-border);
+  border-radius: 8px;
   color: var(--zs-pub-text);
   font-size: 0.875rem;
   line-height: 1.4;
-  border-radius: 8px;
+  cursor: pointer;
+  scroll-snap-align: start;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
@@ -95,39 +162,91 @@
   box-shadow: 0 0 0 1px var(--zs-pub-accent), 0 2px 8px rgba(8,145,178,0.12);
 }
 
-
-/* ─────────────────────────────────────────
-   SIDEBAR
-   ───────────────────────────────────────── */
-
-/* Main panel */
-.zipline-scout__sidebar {
-  background: var(--zs-pub-surface);
-  border-left: 1px solid var(--zs-pub-border);
-  box-shadow: -4px 0 28px rgba(0, 0, 0, 0.10);
+.zipline-scout__card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* Top bar — keep dark for contrast / branding pop */
+
+/* ─────────────────────────────────────────
+   SIDEBAR — fixed right panel
+   ───────────────────────────────────────── */
+.zipline-scout__sidebar[hidden] {
+  display: none !important;
+}
+
+body.zipline-scout-sidebar-visible {
+  padding-right: var(--zipline-scout-sidebar-width, 420px);
+  transition: padding-right 0.2s ease-out;
+}
+
+@media (max-width: 768px) {
+  body.zipline-scout-sidebar-visible {
+    padding-right: 0;
+  }
+}
+
+.zipline-scout__sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(var(--zipline-scout-sidebar-width, 420px), 100vw);
+  max-width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--zs-pub-surface);
+  box-shadow: -4px 0 28px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 2147483646;
+  overflow: hidden;
+  border-left: 1px solid var(--zs-pub-border);
+}
+
+/* Top bar — dark for brand anchor */
 .zipline-scout__sidebar-top {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
   background: var(--zs-pub-header-bg);
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  padding: 14px 16px;
 }
 
 .zipline-scout__sidebar-brand {
-  color: var(--zs-pub-header-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--zs-pub-header-text);
   letter-spacing: -0.01em;
 }
 
 .zipline-scout__sidebar-star {
   color: var(--zs-pub-accent);
+  font-size: 1rem;
 }
 
 .zipline-scout__sidebar-close {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
   background: rgba(255,255,255,0.10);
   color: var(--zs-pub-header-text);
-  border-radius: 8px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
 }
 
 .zipline-scout__sidebar-close:hover {
@@ -136,16 +255,25 @@
 
 /* Tabs */
 .zipline-scout__tabs {
+  display: flex;
+  gap: 0;
   background: var(--zs-pub-card);
   border-bottom: 1px solid var(--zs-pub-border);
+  flex-shrink: 0;
 }
 
 .zipline-scout__tab {
+  flex: 1;
+  padding: 13px 14px;
+  border: none;
+  background: transparent;
   color: var(--zs-pub-muted);
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-  padding: 13px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
   transition: color 0.15s;
 }
 
@@ -160,15 +288,39 @@
 
 /* Sidebar body */
 .zipline-scout__sidebar-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--zs-pub-surface);
+  overflow: hidden;
 }
 
-/* Chat / answer scroll area */
+.zipline-scout__pane--answer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Chat scroll area */
 .zipline-scout__chat {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 16px 24px;
   background: var(--zs-pub-surface);
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Question heading above answer */
+.zipline-scout__turn {
+  margin-bottom: 4px;
+}
+
+/* Question heading */
 .zipline-scout__turn-q {
   font-size: 1.05rem;
   font-weight: 700;
@@ -180,68 +332,117 @@
   border-bottom: 2px solid var(--zs-pub-accent);
 }
 
-/* Answer body text */
+.zipline-scout__turn-body {
+  position: relative;
+}
+
+/* Loading state */
+.zipline-scout__loading-block {
+  padding: 4px 0 16px;
+}
+
+.zipline-scout__loading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--zs-pub-muted);
+  margin-bottom: 14px;
+}
+
+.zipline-scout__loading-star {
+  color: var(--zs-pub-accent);
+  font-size: 1rem;
+}
+
+/* Shimmer skeleton — light version */
+.zipline-scout__skeleton {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e5e2db 0%, #d4d0c9 50%, #e5e2db 100%);
+  background-size: 200% 100%;
+  animation: zipline-scout-shimmer 1.2s ease-in-out infinite;
+  margin-bottom: 10px;
+  max-width: 100%;
+}
+
+.zipline-scout__skeleton--mid   { max-width: 92%; }
+.zipline-scout__skeleton--short { max-width: 55%; margin-bottom: 0; }
+
+@keyframes zipline-scout-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.zipline-scout__turn-actions {
+  margin-top: 10px;
+}
+
+.zipline-scout__turn-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--zs-pub-border), transparent);
+  margin: 20px 0 8px;
+}
+
+/* Sources / general pane */
+.zipline-scout__pane {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px 20px;
+  background: var(--zs-pub-surface);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Answer text */
 .zipline-scout__answer {
   font-size: 0.9rem;
   line-height: 1.65;
   color: #374151;
 }
 
-.zipline-scout__answer p {
-  margin: 0 0 0.8rem;
+.zipline-scout__answer p { margin: 0 0 0.8rem; }
+
+.zipline-scout__answer ul {
+  margin: 0.5rem 0;
+  padding-left: 1.1rem;
+  color: #374151;
 }
 
 .zipline-scout__answer h3,
 .zipline-scout__answer h4 {
-  color: var(--zs-pub-text);
-  font-size: 0.9375rem;
   margin: 1rem 0 0.4rem;
-}
-
-.zipline-scout__answer ul {
-  color: #374151;
-  padding-left: 1.1rem;
+  font-size: 0.9375rem;
+  color: var(--zs-pub-text);
 }
 
 .zipline-scout__thinking {
   color: var(--zs-pub-muted);
+  font-style: italic;
 }
 
 .zipline-scout__err {
   color: #dc2626;
+  margin: 0;
 }
 
-/* Loading skeleton — light version */
-.zipline-scout__skeleton {
-  background: linear-gradient(
-    90deg,
-    #e5e2db 0%,
-    #d4d0c9 50%,
-    #e5e2db 100%
-  );
-  background-size: 200% 100%;
+/* Action icon buttons */
+.zipline-scout__answer-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
 }
 
-.zipline-scout__loading-row {
-  color: var(--zs-pub-muted);
-}
-
-.zipline-scout__loading-star {
-  color: var(--zs-pub-accent);
-}
-
-/* Turn divider */
-.zipline-scout__turn-divider {
-  background: linear-gradient(90deg, transparent, var(--zs-pub-border), transparent);
-}
-
-/* Action buttons (copy etc.) */
 .zipline-scout__icon-btn {
+  width: 40px;
+  height: 36px;
   border: 1px solid var(--zs-pub-border);
+  border-radius: 8px;
   background: var(--zs-pub-card);
   color: var(--zs-pub-muted);
-  border-radius: 8px;
-  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .zipline-scout__icon-btn:hover {
@@ -252,16 +453,29 @@
 
 /* Ad slot */
 .zipline-scout__ad-slot {
-  background: var(--zs-pub-card);
+  margin-top: 16px;
+  min-height: 90px;
   border: 1px dashed var(--zs-pub-border);
   border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--zs-pub-card);
 }
 
 .zipline-scout__ad-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--zs-pub-muted-light);
 }
 
-/* ── Explore More chips ── */
+/* Explore More */
+.zipline-scout__turn-explore,
+.zipline-scout__explore {
+  margin-top: 18px;
+}
+
 .zipline-scout__explore-title {
   font-size: 0.7rem;
   font-weight: 700;
@@ -271,18 +485,22 @@
   margin-bottom: 10px;
 }
 
-/* Outlined chips — inspired by Yahoo Scout style, light variant */
+/* Chips — clean outlined style */
 .zipline-scout__explore-chip {
-  background: var(--zs-pub-card);
-  border: 1.5px solid var(--zs-pub-border);
-  color: var(--zs-pub-text);
-  font-size: 0.8125rem;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
   padding: 11px 14px;
   margin-bottom: 8px;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-  /* Override the gradient border from base */
-  background-image: none;
+  border-radius: 8px;
+  border: 1.5px solid var(--zs-pub-border);
+  background: var(--zs-pub-card);
+  color: var(--zs-pub-text);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s;
 }
 
 .zipline-scout__explore-chip:hover {
@@ -294,19 +512,21 @@
 
 .zipline-scout__explore-arrow {
   color: var(--zs-pub-accent);
+  margin-left: 8px;
+  flex-shrink: 0;
 }
 
-/* Sources pane */
-.zipline-scout__pane {
-  background: var(--zs-pub-surface);
-}
-
+/* Sources */
 .zipline-scout__sources-intro {
   color: var(--zs-pub-muted);
+  font-size: 0.875rem;
+  margin: 0 0 12px;
 }
 
 .zipline-scout__sources-link {
   color: var(--zs-pub-accent);
+  word-break: break-all;
+  font-size: 0.875rem;
 }
 
 
@@ -315,6 +535,7 @@
    ───────────────────────────────────────── */
 @media (max-width: 520px) {
   .zipline-scout__sidebar {
+    width: 100vw !important;
     border-left: none;
     border-top: 3px solid var(--zs-pub-accent);
   }
