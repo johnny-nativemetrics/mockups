@@ -539,20 +539,15 @@ body.zipline-scout-sidebar-visible {
    MOBILE CAROUSEL FIXES
    ───────────────────────────────────────── */
 @media (max-width: 600px) {
-  /* Hide nav arrows — swipe is natural on touch */
-  .zipline-scout__nav {
-    display: none;
-  }
-
-  /* Card fills container width minus padding, next card peeks through */
+  /* Keep arrows visible, card width accounts for both arrows + gaps + padding */
+  /* 2 arrows (32px each) + carousel padding (20px) + gaps (16px) = ~100px total */
   .zipline-scout__card {
-    width: calc(85vw - 24px);
+    width: calc(100vw - 100px);
     min-width: 0;
   }
 
-  /* Tighten carousel padding on mobile */
   .zipline-scout__carousel {
-    padding: 10px 10px;
+    padding: 10px 8px;
   }
 }
 
