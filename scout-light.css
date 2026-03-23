@@ -534,8 +534,30 @@ body.zipline-scout-sidebar-visible {
 }
 
 
+
 /* ─────────────────────────────────────────
-   MOBILE
+   MOBILE CAROUSEL FIXES
+   ───────────────────────────────────────── */
+@media (max-width: 600px) {
+  /* Hide nav arrows — swipe is natural on touch */
+  .zipline-scout__nav {
+    display: none;
+  }
+
+  /* Card fills container width minus padding, next card peeks through */
+  .zipline-scout__card {
+    width: calc(85vw - 24px);
+    min-width: 0;
+  }
+
+  /* Tighten carousel padding on mobile */
+  .zipline-scout__carousel {
+    padding: 10px 10px;
+  }
+}
+
+/* ─────────────────────────────────────────
+   MOBILE (SIDEBAR)
    ───────────────────────────────────────── */
 @media (max-width: 520px) {
   .zipline-scout__sidebar {
