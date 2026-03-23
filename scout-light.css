@@ -1,0 +1,321 @@
+/*
+ * scout-light.css
+ * Publisher override for Zipline Scout — Light Editorial Theme
+ * Load AFTER scout.css. Overrides dark defaults on both
+ * the inline carousel and the fixed sidebar.
+ *
+ * Accent:  #0891b2  (cyan-600)
+ * Surface: #f7f6f3  (warm off-white)
+ * Text:    #1c1917  (warm near-black)
+ */
+
+/* ─────────────────────────────────────────
+   DESIGN TOKENS
+   ───────────────────────────────────────── */
+:root {
+  --zs-pub-accent:       #0891b2;
+  --zs-pub-accent-dim:   rgba(8, 145, 178, 0.12);
+  --zs-pub-accent-mid:   rgba(8, 145, 178, 0.35);
+  --zs-pub-surface:      #f7f6f3;
+  --zs-pub-card:         #ffffff;
+  --zs-pub-card-hover:   #f0f4f6;
+  --zs-pub-border:       #e2dfd8;
+  --zs-pub-border-soft:  #ede9e3;
+  --zs-pub-text:         #1c1917;
+  --zs-pub-muted:        #6b7280;
+  --zs-pub-muted-light:  #9ca3af;
+  --zs-pub-header-bg:    #1c1917;
+  --zs-pub-header-text:  #f7f6f3;
+  --zs-pub-star:         #0891b2;
+}
+
+
+/* ─────────────────────────────────────────
+   CAROUSEL — INLINE ON PUBLISHER PAGE
+   ───────────────────────────────────────── */
+
+/* Force light theme regardless of --dark class */
+.zipline-scout--dark {
+  --zs-bg:         var(--zs-pub-surface);
+  --zs-card:       var(--zs-pub-card);
+  --zs-card-hover: var(--zs-pub-card-hover);
+  --zs-border:     var(--zs-pub-border);
+  --zs-text:       var(--zs-pub-text);
+  --zs-muted:      var(--zs-pub-muted);
+  --zs-accent:     var(--zs-pub-accent);
+}
+
+/* Header: "More from Zipline Scout" */
+.zipline-scout__head-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--zs-pub-text);
+}
+
+.zipline-scout__head-star {
+  color: var(--zs-pub-star);
+}
+
+/* Carousel outer shell — left accent stripe */
+.zipline-scout__carousel {
+  border: 1px solid var(--zs-pub-border);
+  border-left: 3px solid var(--zs-pub-accent);
+  background: var(--zs-pub-surface);
+  border-radius: 10px;
+  padding: 10px 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* Nav arrows */
+.zipline-scout__nav {
+  color: var(--zs-pub-muted);
+}
+
+.zipline-scout__nav:hover {
+  color: var(--zs-pub-accent);
+  background: var(--zs-pub-accent-dim);
+}
+
+/* Question cards */
+.zipline-scout__card {
+  background: var(--zs-pub-card);
+  border: 1px solid var(--zs-pub-border);
+  color: var(--zs-pub-text);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.zipline-scout__card:hover {
+  background: var(--zs-pub-card-hover);
+  border-color: var(--zs-pub-accent);
+  box-shadow: 0 0 0 1px var(--zs-pub-accent), 0 2px 8px rgba(8,145,178,0.12);
+}
+
+
+/* ─────────────────────────────────────────
+   SIDEBAR
+   ───────────────────────────────────────── */
+
+/* Main panel */
+.zipline-scout__sidebar {
+  background: var(--zs-pub-surface);
+  border-left: 1px solid var(--zs-pub-border);
+  box-shadow: -4px 0 28px rgba(0, 0, 0, 0.10);
+}
+
+/* Top bar — keep dark for contrast / branding pop */
+.zipline-scout__sidebar-top {
+  background: var(--zs-pub-header-bg);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 14px 16px;
+}
+
+.zipline-scout__sidebar-brand {
+  color: var(--zs-pub-header-text);
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+}
+
+.zipline-scout__sidebar-star {
+  color: var(--zs-pub-accent);
+}
+
+.zipline-scout__sidebar-close {
+  background: rgba(255,255,255,0.10);
+  color: var(--zs-pub-header-text);
+  border-radius: 8px;
+}
+
+.zipline-scout__sidebar-close:hover {
+  background: rgba(255,255,255,0.20);
+}
+
+/* Tabs */
+.zipline-scout__tabs {
+  background: var(--zs-pub-card);
+  border-bottom: 1px solid var(--zs-pub-border);
+}
+
+.zipline-scout__tab {
+  color: var(--zs-pub-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 13px 14px;
+  transition: color 0.15s;
+}
+
+.zipline-scout__tab--active {
+  color: var(--zs-pub-accent);
+  border-bottom-color: var(--zs-pub-accent);
+}
+
+.zipline-scout__tab:not(.zipline-scout__tab--active):hover {
+  color: var(--zs-pub-text);
+}
+
+/* Sidebar body */
+.zipline-scout__sidebar-body {
+  background: var(--zs-pub-surface);
+}
+
+/* Chat / answer scroll area */
+.zipline-scout__chat {
+  background: var(--zs-pub-surface);
+}
+
+/* Question heading above answer */
+.zipline-scout__turn-q {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--zs-pub-text);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--zs-pub-accent);
+}
+
+/* Answer body text */
+.zipline-scout__answer {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #374151;
+}
+
+.zipline-scout__answer p {
+  margin: 0 0 0.8rem;
+}
+
+.zipline-scout__answer h3,
+.zipline-scout__answer h4 {
+  color: var(--zs-pub-text);
+  font-size: 0.9375rem;
+  margin: 1rem 0 0.4rem;
+}
+
+.zipline-scout__answer ul {
+  color: #374151;
+  padding-left: 1.1rem;
+}
+
+.zipline-scout__thinking {
+  color: var(--zs-pub-muted);
+}
+
+.zipline-scout__err {
+  color: #dc2626;
+}
+
+/* Loading skeleton — light version */
+.zipline-scout__skeleton {
+  background: linear-gradient(
+    90deg,
+    #e5e2db 0%,
+    #d4d0c9 50%,
+    #e5e2db 100%
+  );
+  background-size: 200% 100%;
+}
+
+.zipline-scout__loading-row {
+  color: var(--zs-pub-muted);
+}
+
+.zipline-scout__loading-star {
+  color: var(--zs-pub-accent);
+}
+
+/* Turn divider */
+.zipline-scout__turn-divider {
+  background: linear-gradient(90deg, transparent, var(--zs-pub-border), transparent);
+}
+
+/* Action buttons (copy etc.) */
+.zipline-scout__icon-btn {
+  border: 1px solid var(--zs-pub-border);
+  background: var(--zs-pub-card);
+  color: var(--zs-pub-muted);
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.zipline-scout__icon-btn:hover {
+  background: var(--zs-pub-accent-dim);
+  color: var(--zs-pub-accent);
+  border-color: var(--zs-pub-accent-mid);
+}
+
+/* Ad slot */
+.zipline-scout__ad-slot {
+  background: var(--zs-pub-card);
+  border: 1px dashed var(--zs-pub-border);
+  border-radius: 8px;
+}
+
+.zipline-scout__ad-label {
+  color: var(--zs-pub-muted-light);
+}
+
+/* ── Explore More chips ── */
+.zipline-scout__explore-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--zs-pub-muted);
+  margin-bottom: 10px;
+}
+
+/* Outlined chips — inspired by Yahoo Scout style, light variant */
+.zipline-scout__explore-chip {
+  background: var(--zs-pub-card);
+  border: 1.5px solid var(--zs-pub-border);
+  color: var(--zs-pub-text);
+  font-size: 0.8125rem;
+  border-radius: 8px;
+  padding: 11px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  /* Override the gradient border from base */
+  background-image: none;
+}
+
+.zipline-scout__explore-chip:hover {
+  border-color: var(--zs-pub-accent);
+  background: var(--zs-pub-accent-dim);
+  box-shadow: 0 0 0 1px var(--zs-pub-accent-mid);
+  transform: translateX(-1px);
+}
+
+.zipline-scout__explore-arrow {
+  color: var(--zs-pub-accent);
+}
+
+/* Sources pane */
+.zipline-scout__pane {
+  background: var(--zs-pub-surface);
+}
+
+.zipline-scout__sources-intro {
+  color: var(--zs-pub-muted);
+}
+
+.zipline-scout__sources-link {
+  color: var(--zs-pub-accent);
+}
+
+
+/* ─────────────────────────────────────────
+   MOBILE
+   ───────────────────────────────────────── */
+@media (max-width: 520px) {
+  .zipline-scout__sidebar {
+    border-left: none;
+    border-top: 3px solid var(--zs-pub-accent);
+  }
+}
