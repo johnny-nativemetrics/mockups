@@ -101,13 +101,12 @@
   display: flex;
   align-items: stretch;
   gap: 8px;
-  background: #eef4ff;
+  background: #ddeaff;
   border: none;
-  border-radius: 18px;
-  /* Extra horizontal padding so first/last card shadows never touch the wall */
-  padding: 18px 14px 18px 18px;
+  border-radius: 16px;
+  padding: 14px 10px;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
 
 /* Nav arrows */
@@ -117,7 +116,7 @@
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: #93aacc;
+  color: #5585c5;
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -143,12 +142,9 @@
   flex: 1;
   min-width: 0;
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  /* Vertical padding lets shadows breathe without clipping */
-  padding: 10px 0;
-  margin: -10px 0;
 }
 
 .zipline-scout__track-wrap::-webkit-scrollbar {
@@ -168,16 +164,17 @@
   padding-right: 24px;
 }
 
-/* Question cards — pure white, generous radius, Apple shadow */
+/* Question cards — flat white, bold left accent bar */
 .zipline-scout__card {
   flex: 0 0 auto;
   width: min(260px, 72vw);
   min-height: 84px;
-  padding: 16px 18px;
+  padding: 16px 18px 28px 18px;
   text-align: left;
-  background: var(--zs-apple-card);
-  border: 1px solid rgba(0, 113, 227, 0.10);
-  border-radius: 14px;
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  border-left: 4px solid var(--zs-apple-accent);
   color: var(--zs-apple-text);
   font-size: 0.875rem;
   font-weight: 500;
@@ -185,18 +182,18 @@
   letter-spacing: -0.01em;
   cursor: pointer;
   scroll-snap-align: start;
-  box-shadow: var(--zs-apple-card-shadow);
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: none;
+  position: relative;
+  transition: background 0.15s, border-left-color 0.15s;
 }
 
 .zipline-scout__card:hover {
-  box-shadow: var(--zs-apple-card-shadow-hover);
-  transform: translateY(-1px);
+  background: #f0f5ff;
+  border-left-color: #0051a8;
 }
 
 .zipline-scout__card:active {
-  transform: translateY(0px) scale(0.99);
-  box-shadow: var(--zs-apple-card-shadow);
+  background: #e6efff;
 }
 
 .zipline-scout__card-text {
@@ -206,22 +203,18 @@
   overflow: hidden;
 }
 
-/* Subtle question-mark icon at bottom-right of each card */
+/* Arrow icon bottom-right — visible accent */
 .zipline-scout__card::after {
-  content: '?';
+  content: '→';
   position: absolute;
   bottom: 10px;
   right: 14px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 400;
   color: var(--zs-apple-accent);
-  opacity: 0.3;
+  opacity: 0.6;
   line-height: 1;
   pointer-events: none;
-}
-
-.zipline-scout__card {
-  position: relative;
 }
 
 
