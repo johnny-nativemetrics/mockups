@@ -144,8 +144,8 @@
   overflow-y: visible;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  padding: 4px 0;
-  margin: -4px 0;
+  padding: 8px 0 8px 12px;
+  margin: -8px 0 -8px -12px;
 }
 
 .zipline-scout__track-wrap::-webkit-scrollbar {
@@ -155,7 +155,7 @@
 .zipline-scout__track {
   display: flex;
   gap: 16px;
-  padding: 6px 4px 6px 8px;
+  padding: 6px 4px 6px 0;
 }
 
 /* Trailing spacer so last card snaps flush left */
