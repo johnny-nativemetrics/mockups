@@ -114,21 +114,18 @@
 .zipline-scout__nav {
   flex-shrink: 0;
   width: 32px;
-  height: 32px;
   border: none;
-  border-radius: 50%;
-  background: var(--zs-apple-accent);
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 8px;
+  background: transparent;
+  color: #7aa3d4;
+  font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: none;
   outline: none;
-  transition: background 0.15s, transform 0.1s;
+  transition: color 0.15s;
 }
 
 .zipline-scout__nav:focus {
@@ -136,12 +133,7 @@
 }
 
 .zipline-scout__nav:hover {
-  background: #0051a8;
-  transform: scale(1.08);
-}
-
-.zipline-scout__nav:active {
-  transform: scale(0.96);
+  color: var(--zs-apple-accent);
 }
 
 /* Scrollable track */
