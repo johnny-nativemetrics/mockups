@@ -79,7 +79,7 @@
 
 .zipline-scout__head-star {
   color: var(--zs-apple-accent);
-  font-size: 0.875rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -100,7 +100,7 @@
   display: flex;
   align-items: stretch;
   gap: 8px;
-  background: var(--zs-apple-surface);
+  background: #eef4ff;
   border: none;
   border-radius: 18px;
   padding: 14px 10px;
@@ -112,23 +112,27 @@
   flex-shrink: 0;
   width: 32px;
   border: none;
-  border-radius: 50%;
-  background: var(--zs-apple-card);
-  color: var(--zs-apple-text-secondary);
-  font-size: 1.1rem;
+  border-radius: 8px;
+  background: transparent;
+  color: #93aacc;
+  font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--zs-apple-card-shadow);
-  transition: color 0.15s, box-shadow 0.15s, background 0.15s;
+  box-shadow: none;
+  outline: none;
+  transition: color 0.15s, background 0.15s;
+}
+
+.zipline-scout__nav:focus {
+  outline: none;
 }
 
 .zipline-scout__nav:hover {
   color: var(--zs-apple-accent);
-  box-shadow: var(--zs-apple-card-shadow-hover);
-  background: var(--zs-apple-card);
+  background: rgba(0, 113, 227, 0.08);
 }
 
 /* Scrollable track */
@@ -136,9 +140,11 @@
   flex: 1;
   min-width: 0;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  padding: 4px 0;
+  margin: -4px 0;
 }
 
 .zipline-scout__track-wrap::-webkit-scrollbar {
@@ -148,7 +154,7 @@
 .zipline-scout__track {
   display: flex;
   gap: 16px;
-  padding: 6px 4px;
+  padding: 6px 4px 6px 8px;
 }
 
 /* Trailing spacer so last card snaps flush left */
@@ -166,7 +172,7 @@
   padding: 16px 18px;
   text-align: left;
   background: var(--zs-apple-card);
-  border: none;
+  border: 1px solid rgba(0, 113, 227, 0.10);
   border-radius: 14px;
   color: var(--zs-apple-text);
   font-size: 0.875rem;
