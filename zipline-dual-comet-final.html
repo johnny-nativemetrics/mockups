@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zipline — Animated CTA Button</title>
+  <style>
+
+    /* ─────────────────────────────────────────
+       PAGE CHROME (remove for embed)
+    ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, system-ui, sans-serif;
+      background: #05090f;
+      transition: background 0.35s;
+    }
+    body.lt { background: #e8f2fa; }
+
+    /* ─────────────────────────────────────────
+       ANIMATION
+       Requires @property support (Chrome 85+,
+       Safari 16.4+, Firefox 128+).
+       Falls back gracefully — see .zb styles.
+    ───────────────────────────────────────── */
+    @property --a {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes spn { to { --a: 360deg; } }
+
+    /* ─────────────────────────────────────────
+       BUTTON SHELL
+    ───────────────────────────────────────── */
+    .c-shell {
+      position: relative;
+      display: inline-block;
+      border-radius: 27px;
+    }
+
+    /* ─────────────────────────────────────────
+       DARK MODE — deep navy tail → cyan → white
+    ───────────────────────────────────────── */
+    .c-halo {
+      position: absolute;
+      inset: -5px;
+      border-radius: 30px;
+      z-index: 0;
+      pointer-events: none;
+      animation: spn 2.2s linear infinite;
+      filter: blur(9px);
+      opacity: 0.75;
+      background: conic-gradient(from var(--a),
+        transparent 0deg,  transparent 148deg,
+        #000c20     162deg, #001e60     178deg,
+        #004aaa     196deg, #007fd0     213deg,
+        #00aaee     228deg, #50d8ff     240deg,
+        #a8f0ff     249deg, #ffffff     255deg,
+        transparent 262deg, transparent 360deg
+      );
+    }
+    .c-halo.b { animation-delay: -1.1s; }
+
+    .c-ring {
+      position: absolute;
+      inset: -1px;
+      border-radius: 27px;
+      z-index: 1;
+      pointer-events: none;
+      animation: spn 2.2s linear infinite;
+      background: conic-gradient(from var(--a),
+        transparent 0deg,  transparent 148deg,
+        #000c20     162deg, #001e60     178deg,
+        #004aaa     196deg, #007fd0     213deg,
+        #00aaee     228deg, #50d8ff     240deg,
+        #a8f0ff     249deg, #ffffff     255deg,
+        transparent 262deg, transparent 360deg
+      );
+    }
+    .c-ring.b { animation-delay: -1.1s; }
+
+    /* ─────────────────────────────────────────
+       LIGHT MODE OVERRIDES
+       Tail fades from soft periwinkle (not black)
+       → indigo → royal blue → cyan → white tip.
+       No near-black stops — nothing reads as ink.
+    ───────────────────────────────────────── */
+    body.lt .c-halo { display: none; }
+    body.lt .c-ring  { display: none; }
+
+    /* SVG tracer sits above the button, stroke only — no fill bleed */
+    .lt-tracer {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      overflow: visible;
+    }
+    body.lt .lt-tracer { display: block; }
+    body.lt .zb { border: 1.5px solid #a0c0e0; }
+
+    /* ─────────────────────────────────────────
+       BUTTON
+       Fallback: readable without animation.
+    ───────────────────────────────────────── */
+    .zb {
+      display: block;
+      position: relative;
+      z-index: 2;
+      width: 340px;
+      height: 50px;
+      border-radius: 25px;
+      font-size: 14.5px;
+      font-weight: 500;
+      letter-spacing: .022em;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+      background: #0d1f38;
+      color: #7ec8f0;
+      border: 1.5px solid #1a4068;
+    }
+    .zb:hover { background: #112540; color: #a8d8f8; }
+
+    body.lt .zb {
+      background: #ffffff;
+      color: #0a3a70;
+      border: 1.5px solid #a0c0e0;
+    }
+    body.lt .zb:hover { background: #f0f7ff; color: #082e58; }
+
+    /* ─────────────────────────────────────────
+       DEMO LABELS
+    ───────────────────────────────────────── */
+    .demo-lbl {
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: #1e3a54;
+    }
+    body.lt .demo-lbl { color: #88aacc; }
+
+    /* ─────────────────────────────────────────
+       THEME TOGGLE (demo only — remove for prod)
+    ───────────────────────────────────────── */
+    .tog-row {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .tog-lbl { font-size: 11px; letter-spacing: .08em; color: #1e3a54; }
+    body.lt .tog-lbl { color: #88aacc; }
+    .tb {
+      border-radius: 20px; font-size: 12px; padding: 5px 15px;
+      cursor: pointer; font-family: inherit; font-weight: 500; transition: all .18s;
+      background: #08121e; border: 1px solid #122238; color: #2a5878;
+    }
+    .tb.on { border-color: #0095cc; color: #38c0ee; background: #050d18; }
+    body.lt .tb { background: #dce8f4; border: 1px solid #aac4dc; color: #4888b8; }
+    body.lt .tb.on { border-color: #0065b0; color: #004488; background: #d0e4f5; }
+
+  </style>
+</head>
+<body id="bd">
+
+  <!-- ── BUTTONS ──────────────────────────── -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:36px;">
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <span class="demo-lbl">Animated</span>
+      <div class="c-shell" id="shell">
+        <div class="c-halo"></div>
+        <div class="c-halo b"></div>
+        <div class="c-ring"></div>
+        <div class="c-ring b"></div>
+        <svg class="lt-tracer" id="tracer" width="340" height="50" viewBox="0 0 340 50">
+          <defs>
+            <linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <rect id="tr1" x="1" y="1" width="338" height="48" rx="24" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+          <rect id="tr2" x="1" y="1" width="338" height="48" rx="24" fill="none" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <button class="zb">Get Answers with Zipline Summary</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <span class="demo-lbl">No Animation (fallback)</span>
+      <div class="c-shell">
+        <button class="zb">Get Answers with Zipline Summary</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── THEME TOGGLE (demo only) ─────────── -->
+  <div class="tog-row">
+    <span class="tog-lbl">Theme</span>
+    <button class="tb on" id="bdk" onclick="setT('dk')">Dark</button>
+    <button class="tb"    id="blt" onclick="setT('lt')">Light</button>
+  </div>
+
+  <script>
+    function setT(m) {
+      const isDk = m === 'dk';
+      document.getElementById('bd').className  = isDk ? '' : 'lt';
+      document.getElementById('bdk').className = 'tb' + (isDk ? ' on' : '');
+      document.getElementById('blt').className = 'tb' + (!isDk ? ' on' : '');
+    }
+
+    const P = 733;
+    // 10 layers per comet — each shorter than the last, building up a smooth gradient
+    // color goes periwinkle→indigo→royal→cyan→white, opacity ramps up toward tip
+    const LAYERS = [
+      { len: 160, color: '#c8c0ff', op: 0.08 },
+      { len: 140, color: '#b0a0f8', op: 0.14 },
+      { len: 118, color: '#9070f0', op: 0.22 },
+      { len: 96,  color: '#6040e0', op: 0.32 },
+      { len: 76,  color: '#4025c8', op: 0.44 },
+      { len: 56,  color: '#0060c8', op: 0.58 },
+      { len: 38,  color: '#0090d8', op: 0.72 },
+      { len: 22,  color: '#40c8f0', op: 0.85 },
+      { len: 10,  color: '#a8eeff', op: 0.94 },
+      { len: 4,   color: '#ffffff', op: 1.00 },
+    ];
+
+    const svg = document.getElementById('tracer');
+    // Build rects for 2 comets × 10 layers
+    const rects = [];
+    [0, P / 2].forEach((delay, ci) => {
+      LAYERS.forEach((l, li) => {
+        const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        r.setAttribute('x','1'); r.setAttribute('y','1');
+        r.setAttribute('width','338'); r.setAttribute('height','48');
+        r.setAttribute('rx','24'); r.setAttribute('fill','none');
+        r.setAttribute('stroke', l.color);
+        r.setAttribute('stroke-opacity', l.op);
+        r.setAttribute('stroke-width','1.5');
+        r.setAttribute('stroke-linecap','round');
+        svg.appendChild(r);
+        rects.push({ el: r, len: l.len, delay });
+      });
+    });
+    // Hide placeholder rects
+    ['tr1','tr2'].forEach(id => document.getElementById(id).setAttribute('stroke','none'));
+
+    let t0 = null;
+    function tick(ts) {
+      if (!t0) t0 = ts;
+      const pos = (ts - t0) * 0.001 / 2.2 * P;
+      rects.forEach(r => {
+        const tip = (pos + r.delay) % P;
+        const tail = ((tip - r.len) % P + P) % P;
+        r.el.setAttribute('stroke-dasharray', r.len + ' ' + (P - r.len));
+        r.el.setAttribute('stroke-dashoffset', -tail);
+      });
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  </script>
+
+</body>
+</html>
