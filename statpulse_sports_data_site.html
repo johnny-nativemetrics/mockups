@@ -1,302 +1,376 @@
-<link href="https://cdn.jsdelivr.net/npm/@fontsource/barlow-condensed@5.0.19/600.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/@fontsource/dm-mono@5.0.19/400.css" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root {
-  --ac: #ff4d4d;
-  --acl: rgba(255, 77, 77, 0.15);
-  --fn: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
-  --fm: 'DM Mono', 'Courier New', monospace;
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a0aec0;
-  --color-text-tertiary: #718096;
-  --color-background-primary: #0f111a;
-  --color-background-secondary: #1a1d29;
-  --color-background-tertiary: #242838;
-  --color-border-secondary: #2d3748;
-  --color-border-tertiary: #1e2533;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StatPulse Dashboard</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/barlow-condensed@5.0.19/600.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/dm-mono@5.0.19/400.css" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root {
+            --ac: #ff4d4d;
+            --acl: rgba(255, 77, 77, 0.15);
+            --link-color: #60a5fa; /* Modern blue for links */
+            --fn: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
+            --fm: 'DM Mono', 'Courier New', monospace;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #a0aec0;
+            --color-text-tertiary: #718096;
+            --color-background-primary: #0f111a;
+            --color-background-secondary: #1a1d29;
+            --color-background-tertiary: #242838;
+            --color-border-secondary: #2d3748;
+            --color-border-tertiary: #1e2533;
+        }
 
-body { background-color: var(--color-background-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--color-text-primary); }
+        body { background-color: var(--color-background-primary); font-family: -apple-system, sans-serif; color: #fff; line-height: 1.4; }
 
-/* MODAL STYLES */
-#modalOverlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(6px);
-  z-index: 9999;
-}
-#modalContainer {
-  position: relative;
-  width: 94%; height: 88%;
-  max-width: 1300px;
-  margin: 3% auto;
-  background: #000;
-  border: 1px solid var(--color-border-secondary);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-#modalIframe { width: 100%; height: 100%; border: none; background: #fff; }
-#closeModal {
-  position: absolute;
-  top: 15px; right: 20px;
-  background: var(--ac);
-  color: #fff;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 6px;
-  font-family: var(--fn);
-  font-weight: 600;
-  cursor: pointer;
-  z-index: 10001;
-  text-transform: uppercase;
-}
+        /* MODAL OVERLAY */
+        #modalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); z-index: 9999; }
+        #modalContainer { position: relative; width: 95%; height: 90%; max-width: 1300px; margin: 2.5% auto; background: #000; border: 1px solid var(--color-border-secondary); border-radius: 16px; overflow: hidden; }
+        #modalIframe { width: 100%; height: 100%; border: none; background: #fff; }
+        #closeModal { position: absolute; top: 15px; right: 20px; background: var(--ac); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: var(--fn); font-weight: 600; cursor: pointer; z-index: 10001; text-transform: uppercase; }
 
-/* HEADER & NAV */
-.sp { position: relative; }
-.hdr{display:flex;align-items:center;gap:10px;padding:0 16px;height:50px;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
-.logo{display:flex;align-items:center;gap:8px;font-family:var(--fn);font-size:21px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
-.logo-ic{width:24px;height:24px;background:var(--ac);border-radius:4px;display:flex;align-items:center;justify-content:center}
-.hdr-r{display:flex;gap:6px;margin-left:auto}
-.iBtn{width:30px;height:30px;border-radius:6px;border:.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);background:none;}
-.snav{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:.5px solid var(--color-border-tertiary);padding:0 12px;background:var(--color-background-primary)}
-.stab{flex-shrink:0;padding:0 13px;height:40px;display:flex;align-items:center;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-secondary);cursor:pointer;border:none;background:none;border-bottom:2.5px solid transparent;}
-.stab.on{color:var(--ac);border-bottom-color:var(--ac)}
+        /* HEADER & DASHBOARD */
+        .hdr{display:flex;align-items:center;padding:0 16px;height:55px;border-bottom:1px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+        .logo{display:flex;align-items:center;gap:10px;font-family:var(--fn);font-size:22px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+        .logo-ic{width:26px;height:26px;background:var(--ac);border-radius:6px;display:flex;align-items:center;justify-content:center}
+        .snav{display:flex;overflow-x:auto;border-bottom:1px solid var(--color-border-tertiary);padding:0 12px;background:var(--color-background-primary);scrollbar-width:none;}
+        .snav::-webkit-scrollbar { display: none; }
+        .stab{flex-shrink:0;padding:0 15px;height:44px;display:flex;align-items:center;font-size:12px;font-weight:600;text-transform:uppercase;color:var(--color-text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;}
+        .stab.on{color:var(--ac);border-bottom-color:var(--ac)}
 
-/* BANNER & STANDINGS */
-.lbanner{padding:9px 16px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);flex-wrap:wrap}
-.lname{font-family:var(--fn);font-size:17px;font-weight:600;}
-.bdg{font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;text-transform:uppercase;background:var(--color-background-tertiary);color:var(--color-text-tertiary);border:.5px solid var(--color-border-tertiary)}
-.bdg-live{background:var(--ac);color:#fff;border:none;}
+        .main{max-width:1100px;margin:0 auto;padding:0 16px}
+        .sh{display:flex;align-items:baseline;gap:8px;padding:24px 0 12px; font-family: var(--fn); font-size: 20px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--color-border-tertiary); margin-bottom: 15px;}
+        
+        /* GRID & CARDS */
+        .ugrid{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:12px;margin-bottom:30px}
+        .ucard{border:1px solid var(--color-border-tertiary);border-radius:14px;padding:16px;background:var(--color-background-secondary);}
+        .ucm{font-size:11px; font-family: var(--fm); color: var(--color-text-secondary); margin-bottom: 14px; display: flex; justify-content: space-between;}
+        .match-upc{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+        .tm{text-align:center; flex:1;}
+        .tl{width:42px;height:42px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-weight:600;font-family:var(--fn); font-size: 13px;}
+        .tn{font-size:12px; font-weight: 600; display: block; height: 32px; line-height: 1.2;}
 
-.qstand{display:flex;align-items:center;gap:5px;padding:8px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:.5px solid var(--color-border-tertiary)}
-.qsl{font-size:10px;font-weight:500;text-transform:uppercase;color:var(--color-text-tertiary);flex-shrink:0;}
-.qdv{width:1px;height:18px;background:var(--color-border-tertiary);margin:0 5px}
-.qsi{display:flex;align-items:center;gap:5px;padding:3px 10px;border:.5px solid var(--color-border-tertiary);border-radius:20px;font-size:11px;background: var(--color-background-secondary)}
-.qsteam{font-weight:500}
+        /* RECENT GAMES TABLE */
+        .twrap { border:1px solid var(--color-border-tertiary); border-radius:12px; overflow: hidden; background: var(--color-background-secondary); margin-bottom: 50px;}
+        .gt { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .gt th { text-align: left; padding: 14px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--color-text-tertiary); background: var(--color-background-secondary); border-bottom: 1px solid var(--color-border-tertiary); }
+        .gt td { padding: 16px 14px; border-bottom: 1px solid var(--color-border-tertiary); background: var(--color-background-primary); color: #fff; vertical-align: middle; }
+        
+        .mw { font-weight: 600; color: #fff; font-size: 14px; }
+        .ml { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px;}
+        .sc { font-family: var(--fm); font-weight: 600; color: #fff; }
+        
+        /* ENHANCED PLAYER LINKS */
+        .pn { 
+            color: var(--link-color); 
+            text-decoration: none; 
+            font-weight: 600; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            border-bottom: 1px dashed rgba(96, 165, 250, 0.4);
+            padding-bottom: 1px;
+        }
+        .pn:hover { border-bottom-style: solid; color: #fff; }
+        .pn svg { opacity: 0.7; }
 
-/* MAIN CONTENT */
-.main{max-width:1100px;margin:0 auto;padding:0 16px}
-.sh{display:flex;align-items:baseline;gap:8px;padding:18px 0 11px}
-.st{font-family:var(--fn);font-size:19px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
-.sct{font-size:11px;color:var(--color-text-tertiary)}
+        .rb { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; padding: 8px 16px; border-radius: 8px; color: #fff; background: #22c55e; text-decoration: none; border: none; transition: background 0.2s; cursor: pointer; }
+        .rb:hover { background: #1ea34d; }
+        
+        .pill { padding: 3px 10px; border-radius: 5px; font-family: var(--fm); font-size: 11px; font-weight: 600;}
+        .pm { background: var(--color-background-tertiary); color: var(--color-text-secondary); }
+        .pc { background: var(--acl); color: var(--ac); }
 
-/* UPCOMING GRID */
-.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;margin-bottom:4px}
-.ucard{border:.5px solid var(--color-border-tertiary);border-radius:12px;padding:13px 14px;background:var(--color-background-secondary);transition:border-color .12s}
-.ucard:hover{border-color:var(--ac)}
-.ucm{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:11px;font-family:var(--fm);color:var(--color-text-secondary)}
-.match{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.tm{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
-.tl{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fn);font-size:12px;font-weight:600;}
-.tn{font-size:11px;font-weight:600;color:#fff;text-align:center;line-height:1.2}
-.trec{font-size:10px;color:var(--color-text-tertiary);font-family:var(--fm)}
-.vs{font-size:12px;color:var(--color-text-tertiary)}
+        /* MOBILE OPTIMIZED (SCORECARD STYLE) */
+        @media (max-width: 800px) {
+            .gt thead { display: none; }
+            .gt tr { 
+                display: block; 
+                padding: 16px; 
+                margin-bottom: 16px; 
+                background: var(--color-background-secondary); 
+                border: 1px solid var(--color-border-tertiary); 
+                border-radius: 16px;
+            }
+            .gt td { display: block; border: none; padding: 8px 0; background: transparent; }
+            
+            /* Hierarchy for Scorecard */
+            .gt td[data-label="Matchup"] { padding-bottom: 2px; }
+            .mw { font-size: 18px; display: block; }
+            .gt td[data-label="Score"] { padding-top: 0; padding-bottom: 15px; border-bottom: 1px solid var(--color-border-tertiary); }
+            .sc { font-size: 24px; }
 
-/* RECENT GAMES TABLE */
-.twrap{overflow-x:auto;border:.5px solid var(--color-border-tertiary);border-radius:12px;margin-bottom:28px;background: var(--color-background-secondary)}
-.gt{width:100%;border-collapse:collapse;font-size:13px}
-.gt th{text-align:left;padding:9px 13px;font-size:9px;font-weight:500;text-transform:uppercase;color:var(--color-text-tertiary);border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
-.gt td{padding:11px 13px;border-bottom:.5px solid var(--color-border-tertiary);vertical-align:middle;white-space:nowrap;background:var(--color-background-primary);color:#fff;}
-.mw{font-weight:600;font-size:13px;color:#ffffff}
-.ml{font-weight:400;font-size:11px;color:var(--color-text-secondary);margin-top:2px}
-.sc{font-family:var(--fm);font-size:13px;color:#ffffff}
+            .mobile-stats-grid { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                gap: 15px; 
+                padding: 15px 0;
+                border-bottom: 1px solid var(--color-border-tertiary);
+            }
+            .mobile-stat-box { display: flex; flex-direction: column; gap: 3px; }
+            .mobile-stat-label { font-size: 10px; text-transform: uppercase; color: var(--color-text-tertiary); font-weight: 700; letter-spacing: 0.05em; }
+            .mobile-stat-val { font-size: 13px; font-weight: 600; color: #fff; }
 
-/* LINKS & BUTTONS */
-.pn{font-size:12px;font-weight:600;color:var(--color-text-secondary);text-decoration:none;transition: color 0.12s}
-.pn:hover{color:#ffffff;text-decoration:underline}
-.rb{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:6px 12px;border-radius:6px;color:#ffffff;background:#22c55e;text-decoration:none;border:none;cursor:pointer;}
-.rb:hover{background:#1ea34d;box-shadow: 0 0 8px rgba(34, 197, 94, 0.4)}
-.pill{display:inline-flex;padding:2px 7px;border-radius:4px;font-family:var(--fm);font-size:11px}
-.pm{background:var(--color-background-tertiary);color:var(--color-text-secondary)}
-.pc{background:var(--acl);color:var(--ac)}
+            .gt td[data-label="Recap"] { padding: 15px 0 0; }
+            .rb { width: 100%; justify-content: center; padding: 14px; font-size: 12px; }
 
-.sport{display:none}
-.sport.active{display:block}
-@media(max-width:680px){.hm{display:none}.ugrid{grid-template-columns:1fr 1fr}}
-</style>
+            /* Grid items hidden on Desktop but labeled for Mobile */
+            .gt td[data-label="Date"], 
+            .gt td[data-label="Margin"], 
+            .gt td[data-label="Top Performer"], 
+            .gt td[data-label="Total Pts"], 
+            .gt td[data-label="Pace"] { display: none; }
+
+            .ugrid { grid-template-columns: 1fr; }
+            #modalContainer { width: 100%; height: 100%; margin: 0; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
 
 <div id="modalOverlay">
   <div id="modalContainer">
     <button id="closeModal">Exit Recap</button>
-    <iframe id="modalIframe" src=""></iframe>
+    <iframe id="modalIframe" src="about:blank"></iframe>
   </div>
 </div>
 
 <div class="sp">
   <div class="hdr">
     <div class="logo">
-      <div class="logo-ic"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8.5 1L3.5 7.5H7L4 12L11 5.5H7.5Z" fill="#fff"/></svg></div>
+      <div class="logo-ic"><svg width="14" height="14" viewBox="0 0 13 13" fill="none"><path d="M8.5 1L3.5 7.5H7L4 12L11 5.5H7.5Z" fill="#fff"/></svg></div>
       StatPulse
-    </div>
-    <div class="hdr-r">
-      <button class="iBtn"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor"><circle cx="5.5" cy="5.5" r="3.8" stroke-width="1.2"/><path d="M8.5 8.5L12 12" stroke-width="1.2" stroke-linecap="round"/></svg></button>
     </div>
   </div>
 
   <div class="snav">
-    <button class="stab">NFL</button>
-    <button class="stab on">NBA</button>
-    <button class="stab">MLB</button>
-    <button class="stab">NHL</button>
-    <button class="stab">NCAAB</button>
-    <button class="stab">MLS</button>
+    <button class="stab">NFL</button><button class="stab on">NBA</button><button class="stab">MLB</button><button class="stab">NHL</button><button class="stab">NCAAB</button>
   </div>
 
-  <div id="nba" class="sport active">
-    <div class="lbanner">
-      <span class="lname">NBA</span><span class="qdv"></span>
-      <span>2025–26 Regular Season · Week 22</span>
-      <span class="bdg">14 games remaining</span>
-      <span class="bdg bdg-live">&#9654; 2 live now</span>
-    </div>
-
-    <div class="qstand">
-      <span class="qsl">East</span>
-      <div class="qsi"><span class="qsteam">BOS</span><span>58–16</span></div>
-      <div class="qsi"><span class="qsteam">CLE</span><span>52–22</span></div>
-      <div class="qsi"><span class="qsteam">NYK</span><span>44–30</span></div>
-      <span class="qdv"></span>
-      <span class="qsl">West</span>
-      <div class="qsi"><span class="qsteam">OKC</span><span>56–18</span></div>
-      <div class="qsi"><span class="qsteam">DEN</span><span>52–22</span></div>
-      <div class="qsi"><span class="qsteam">HOU</span><span>45–29</span></div>
-    </div>
-
-    <div class="main">
-      <div class="sh"><span class="st">Upcoming Games</span><span class="sct">4 games · next 48 hrs</span></div>
-      <div class="ugrid">
-        <div class="ucard">
-          <div class="ucm">Sat Mar 28 · 7:30 PM ET <span class="bdg">ESPN</span></div>
-          <div class="match">
-            <div class="tm"><div class="tl" style="background:#1D428A;color:#FFC72C">GSW</div><span class="tn">Warriors</span><span class="trec">35–39</span></div>
-            <span class="vs">@</span>
-            <div class="tm"><div class="tl" style="background:#007AC1;color:#fff">OKC</div><span class="tn">Thunder</span><span class="trec">56–18</span></div>
-          </div>
-        </div>
-        <div class="ucard">
-          <div class="ucm">Sat Mar 28 · 7:30 PM ET <span class="bdg">ESPN2</span></div>
-          <div class="match">
-            <div class="tm"><div class="tl" style="background:#98002E;color:#F9A01B">MIA</div><span class="tn">Heat</span><span class="trec">38–36</span></div>
-            <span class="vs">@</span>
-            <div class="tm"><div class="tl" style="background:#006BB6;color:#F58426">NYK</div><span class="tn">Knicks</span><span class="trec">44–30</span></div>
-          </div>
-        </div>
-        <div class="ucard">
-          <div class="ucm">Sun Mar 29 · 6:00 PM ET <span class="bdg">ABC</span></div>
-          <div class="match">
-            <div class="tm"><div class="tl" style="background:#007A33;color:#fff">BOS</div><span class="tn">Celtics</span><span class="trec">58–16</span></div>
-            <span class="vs">@</span>
-            <div class="tm"><div class="tl" style="background:#00471B;color:#EEE520">MIL</div><span class="tn">Bucks</span><span class="trec">42–32</span></div>
-          </div>
-        </div>
-        <div class="ucard">
-          <div class="ucm">Sun Mar 29 · 10:00 PM ET <span class="bdg">TNT</span></div>
-          <div class="match">
-            <div class="tm"><div class="tl" style="background:#0E2240;color:#FEC524">DEN</div><span class="tn">Nuggets</span><span class="trec">52–22</span></div>
-            <span class="vs">@</span>
-            <div class="tm"><div class="tl" style="background:#552583;color:#FDB927">LAL</div><span class="tn">Lakers</span><span class="trec">41–33</span></div>
-          </div>
+  <div class="main">
+    <div class="sh">Upcoming Games</div>
+    <div class="ugrid">
+      <div class="ucard">
+        <div class="ucm">Sat Mar 28 · 7:30 PM <span class="pill pm">ESPN</span></div>
+        <div class="match-upc">
+          <div class="tm"><div class="tl" style="background:#1D428A;color:#FFC72C">GSW</div><span class="tn">Warriors</span></div>
+          <span style="color:var(--color-text-tertiary)">@</span>
+          <div class="tm"><div class="tl" style="background:#007AC1;color:#fff">OKC</div><span class="tn">Thunder</span></div>
         </div>
       </div>
-
-      <div class="sh"><span class="st">Recent Games</span><span class="sct">last 6 results</span></div>
-      <div class="twrap">
-        <table class="gt">
-          <thead>
-            <tr>
-              <th>Date</th><th>Matchup</th><th>Final Score</th><th>Recap</th><th>Margin</th><th class="hm">Top Performer</th><th class="hm">Pace</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="dc">Mar 26</td>
-              <td><div class="mw">BOS def. MIA</div><div class="ml">TD Garden, Boston</div></td>
-              <td class="sc">118 – 107</td>
-              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+boston+vs+miami+march+26+2026+play+by+play+recap">Interactive Recap</a></td>
-              <td><span class="pill pm">+11</span></td>
-              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Jayson+Tatum">Jayson Tatum</a><div class="ml">34p · 8r · 5a</div></td>
-              <td class="hm" style="font-family:var(--fm); font-size:11px">101.4</td>
-            </tr>
-            <tr>
-              <td class="dc">Mar 26</td>
-              <td><div class="mw">DEN def. LAC</div><div class="ml">Ball Arena, Denver</div></td>
-              <td class="sc">124 – 108</td>
-              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+denver+vs+clippers+march+26+2026+play+by+play+recap">Interactive Recap</a></td>
-              <td><span class="pill pm">+16</span></td>
-              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Nikola+Jokic">Nikola Jokic</a><div class="ml">29p · 14r · 12a</div></td>
-              <td class="hm" style="font-family:var(--fm); font-size:11px">103.1</td>
-            </tr>
-            <tr>
-              <td class="dc">Mar 25</td>
-              <td><div class="mw">OKC def. GSW <span class="otag">OT</span></div><div class="ml">Paycom Center, OKC</div></td>
-              <td class="sc">116 – 110</td>
-              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+okc+vs+warriors+march+25+2026+play+by+play+recap">Interactive Recap</a></td>
-              <td><span class="pill pc">+6</span></td>
-              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Shai+Gilgeous-Alexander">Shai Gilgeous-Alexander</a><div class="ml">38p · 5r · 7a</div></td>
-              <td class="hm" style="font-family:var(--fm); font-size:11px">99.8</td>
-            </tr>
-            <tr>
-              <td class="dc">Mar 25</td>
-              <td><div class="mw">NYK def. PHI <span class="otag">3OT</span></div><div class="ml">Madison Square Garden</div></td>
-              <td class="sc">139 – 132</td>
-              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+knicks+vs+76ers+march+25+2026+play+by+play+recap">Interactive Recap</a></td>
-              <td><span class="pill pc">+7</span></td>
-              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Jalen+Brunson">Jalen Brunson</a><div class="ml">47p · 4r · 9a</div></td>
-              <td class="hm" style="font-family:var(--fm); font-size:11px">107.2</td>
-            </tr>
-            <tr>
-              <td class="dc">Mar 24</td>
-              <td><div class="mw">CLE def. MIL</div><div class="ml">Rocket Mortgage FieldHouse</div></td>
-              <td class="sc">103 – 97</td>
-              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+cleveland+vs+milwaukee+march+24+2026+play+by+play+recap">Interactive Recap</a></td>
-              <td><span class="pill pm">+6</span></td>
-              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Donovan+Mitchell">Donovan Mitchell</a><div class="ml">26p · 3r · 6a</div></td>
-              <td class="hm" style="font-family:var(--fm); font-size:11px">96.1</td>
-            </tr>
-            <tr>
-              <td class="dc">Mar 24</td>
-              <td><div class="mw">LAL def. PHX</div><div class="ml">Crypto.com Arena, LA</div></td>
-              <td class="sc">114 – 106</td>
-              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+lakers+vs+suns+march+24+2026+play+by+play+recap">Interactive Recap</a></td>
-              <td><span class="pill pm">+8</span></td>
-              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+LeBron+James">LeBron James</a><div class="ml">27p · 7r · 9a</div></td>
-              <td class="hm" style="font-family:var(--fm); font-size:11px">100.3</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="ucard">
+        <div class="ucm">Sat Mar 28 · 7:30 PM <span class="pill pm">ESPN2</span></div>
+        <div class="match-upc">
+          <div class="tm"><div class="tl" style="background:#98002E;color:#F9A01B">MIA</div><span class="tn">Heat</span></div>
+          <span style="color:var(--color-text-tertiary)">@</span>
+          <div class="tm"><div class="tl" style="background:#006BB6;color:#F58426">NYK</div><span class="tn">Knicks</span></div>
+        </div>
       </div>
+      <div class="ucard">
+        <div class="ucm">Sun Mar 29 · 6:00 PM <span class="pill pm">ABC</span></div>
+        <div class="match-upc">
+          <div class="tm"><div class="tl" style="background:#007A33;color:#fff">BOS</div><span class="tn">Celtics</span></div>
+          <span style="color:var(--color-text-tertiary)">@</span>
+          <div class="tm"><div class="tl" style="background:#00471B;color:#EEE520">MIL</div><span class="tn">Bucks</span></div>
+        </div>
+      </div>
+      <div class="ucard">
+        <div class="ucm">Sun Mar 29 · 10:00 PM <span class="pill pm">TNT</span></div>
+        <div class="match-upc">
+          <div class="tm"><div class="tl" style="background:#0E2240;color:#FEC524">DEN</div><span class="tn">Nuggets</span></div>
+          <span style="color:var(--color-text-tertiary)">@</span>
+          <div class="tm"><div class="tl" style="background:#552583;color:#FDB927">LAL</div><span class="tn">Lakers</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sh">Recent Games</div>
+    <div class="twrap">
+      <table class="gt">
+        <thead>
+          <tr>
+            <th>Date</th><th>Matchup</th><th>Score</th><th>Recap</th><th>Margin</th><th>Top Performer</th><th>Pts</th><th>Pace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Date">Mar 26</td>
+            <td data-label="Matchup"><div class="mw">BOS def. MIA</div><div class="ml">TD Garden, Boston</div></td>
+            <td data-label="Score"><div class="sc">118 – 107</div></td>
+            <td class="mobile-only-cell" style="display:none">
+                <div class="mobile-stats-grid">
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 26</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+11</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
+                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Jayson+Tatum">Jayson Tatum <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                    </div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">101.4</span></div>
+                </div>
+            </td>
+            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+boston+vs+miami+march+26+2026+play+by+play+recap">Interactive Recap</button></td>
+            <td data-label="Margin"><span class="pill pm">+11</span></td>
+            <td data-label="Top Performer">
+                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Jayson+Tatum">Jayson Tatum <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                <div class="ml">34p · 8r · 5a</div>
+            </td>
+            <td data-label="Pts" style="font-family:var(--fm)">225</td>
+            <td data-label="Pace" style="font-family:var(--fm)">101.4</td>
+          </tr>
+          <tr>
+            <td data-label="Date">Mar 26</td>
+            <td data-label="Matchup"><div class="mw">DEN def. LAC</div><div class="ml">Ball Arena, Denver</div></td>
+            <td data-label="Score"><div class="sc">124 – 108</div></td>
+            <td class="mobile-only-cell" style="display:none">
+                <div class="mobile-stats-grid">
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 26</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+16</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
+                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Nikola+Jokic">Nikola Jokic <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                    </div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">103.1</span></div>
+                </div>
+            </td>
+            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+denver+vs+clippers+march+26+2026+play+by+play+recap">Interactive Recap</button></td>
+            <td data-label="Margin"><span class="pill pm">+16</span></td>
+            <td data-label="Top Performer">
+                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Nikola+Jokic">Nikola Jokic <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                <div class="ml">29p · 14r · 12a</div>
+            </td>
+            <td data-label="Pts" style="font-family:var(--fm)">232</td>
+            <td data-label="Pace" style="font-family:var(--fm)">103.1</td>
+          </tr>
+          <tr>
+            <td data-label="Date">Mar 25</td>
+            <td data-label="Matchup"><div class="mw">OKC def. GSW</div><div class="ml">Paycom Center, OKC</div></td>
+            <td data-label="Score"><div class="sc">116 – 110</div></td>
+            <td class="mobile-only-cell" style="display:none">
+                <div class="mobile-stats-grid">
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 25</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+6</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
+                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Shai+Gilgeous-Alexander">Shai Gilgeous-Alexander <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                    </div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">99.8</span></div>
+                </div>
+            </td>
+            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+okc+vs+warriors+march+25+2026+play+by+play+recap">Interactive Recap</button></td>
+            <td data-label="Margin"><span class="pill pc">+6</span></td>
+            <td data-label="Top Performer">
+                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Shai+Gilgeous-Alexander">Shai Gilgeous-Alexander <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                <div class="ml">38p · 5r · 7a</div>
+            </td>
+            <td data-label="Pts" style="font-family:var(--fm)">226</td>
+            <td data-label="Pace" style="font-family:var(--fm)">99.8</td>
+          </tr>
+          <tr>
+            <td data-label="Date">Mar 25</td>
+            <td data-label="Matchup"><div class="mw">NYK def. PHI</div><div class="ml">Madison Sq Garden</div></td>
+            <td data-label="Score"><div class="sc">139 – 132</div></td>
+            <td class="mobile-only-cell" style="display:none">
+                <div class="mobile-stats-grid">
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 25</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+7</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
+                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Jalen+Brunson">Jalen Brunson <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                    </div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">107.2</span></div>
+                </div>
+            </td>
+            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+knicks+vs+76ers+march+25+2026+play+by+play+recap">Interactive Recap</button></td>
+            <td data-label="Margin"><span class="pill pc">+7</span></td>
+            <td data-label="Top Performer">
+                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Jalen+Brunson">Jalen Brunson <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                <div class="ml">47p · 4r · 9a</div>
+            </td>
+            <td data-label="Pts" style="font-family:var(--fm)">271</td>
+            <td data-label="Pace" style="font-family:var(--fm)">107.2</td>
+          </tr>
+          <tr>
+            <td data-label="Date">Mar 24</td>
+            <td data-label="Matchup"><div class="mw">CLE def. MIL</div><div class="ml">Rocket Mortgage FH</div></td>
+            <td data-label="Score"><div class="sc">103 – 97</div></td>
+            <td class="mobile-only-cell" style="display:none">
+                <div class="mobile-stats-grid">
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 24</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+6</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
+                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Donovan+Mitchell">Donovan Mitchell <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                    </div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">96.1</span></div>
+                </div>
+            </td>
+            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+cleveland+vs+milwaukee+march+24+2026+play+by+play+recap">Interactive Recap</button></td>
+            <td data-label="Margin"><span class="pill pm">+6</span></td>
+            <td data-label="Top Performer">
+                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Donovan+Mitchell">Donovan Mitchell <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                <div class="ml">26p · 3r · 6a</div>
+            </td>
+            <td data-label="Pts" style="font-family:var(--fm)">200</td>
+            <td data-label="Pace" style="font-family:var(--fm)">96.1</td>
+          </tr>
+          <tr>
+            <td data-label="Date">Mar 24</td>
+            <td data-label="Matchup"><div class="mw">LAL def. PHX</div><div class="ml">Crypto.com Arena</div></td>
+            <td data-label="Score"><div class="sc">114 – 106</div></td>
+            <td class="mobile-only-cell" style="display:none">
+                <div class="mobile-stats-grid">
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 24</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+8</span></div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
+                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+LeBron+James">LeBron James <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                    </div>
+                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">100.3</span></div>
+                </div>
+            </td>
+            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+lakers+vs+suns+march+24+2026+play+by+play+recap">Interactive Recap</button></td>
+            <td data-label="Margin"><span class="pill pm">+8</span></td>
+            <td data-label="Top Performer">
+                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+LeBron+James">LeBron James <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                <div class="ml">27p · 7r · 9a</div>
+            </td>
+            <td data-label="Pts" style="font-family:var(--fm)">220</td>
+            <td data-label="Pace" style="font-family:var(--fm)">100.3</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  const overlay = document.getElementById('modalOverlay');
-  const iframe = document.getElementById('modalIframe');
-  const closeBtn = document.getElementById('closeModal');
-  const triggers = document.querySelectorAll('.modal-trigger');
+    const overlay = document.getElementById('modalOverlay');
+    const iframe = document.getElementById('modalIframe');
+    const closeBtn = document.getElementById('closeModal');
 
-  function openModal(e) {
-    e.preventDefault();
-    const url = this.getAttribute('href');
-    iframe.src = url;
-    overlay.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  }
+    function handleResponsiveGrid() {
+        const isMobile = window.innerWidth <= 800;
+        document.querySelectorAll('.mobile-only-cell').forEach(cell => {
+            cell.style.display = isMobile ? 'block' : 'none';
+        });
+    }
+    
+    window.addEventListener('resize', handleResponsiveGrid);
+    handleResponsiveGrid();
 
-  function closeModal() {
-    overlay.style.display = 'none';
-    iframe.src = '';
-    document.body.style.overflow = 'auto';
-  }
+    document.querySelectorAll('.modal-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = trigger.getAttribute('data-url');
+            iframe.src = url; 
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        });
+    });
 
-  triggers.forEach(t => t.addEventListener('click', openModal));
-  closeBtn.addEventListener('click', closeModal);
-  window.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
-});
+    closeBtn.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        iframe.src = 'about:blank';
+        document.body.style.overflow = 'auto';
+    });
 </script>
+</body>
+</html>
