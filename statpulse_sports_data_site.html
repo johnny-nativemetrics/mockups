@@ -1,0 +1,302 @@
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/barlow-condensed@5.0.19/600.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/dm-mono@5.0.19/400.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --ac: #ff4d4d;
+  --acl: rgba(255, 77, 77, 0.15);
+  --fn: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
+  --fm: 'DM Mono', 'Courier New', monospace;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a0aec0;
+  --color-text-tertiary: #718096;
+  --color-background-primary: #0f111a;
+  --color-background-secondary: #1a1d29;
+  --color-background-tertiary: #242838;
+  --color-border-secondary: #2d3748;
+  --color-border-tertiary: #1e2533;
+}
+
+body { background-color: var(--color-background-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--color-text-primary); }
+
+/* MODAL STYLES */
+#modalOverlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+}
+#modalContainer {
+  position: relative;
+  width: 94%; height: 88%;
+  max-width: 1300px;
+  margin: 3% auto;
+  background: #000;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+#modalIframe { width: 100%; height: 100%; border: none; background: #fff; }
+#closeModal {
+  position: absolute;
+  top: 15px; right: 20px;
+  background: var(--ac);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-family: var(--fn);
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10001;
+  text-transform: uppercase;
+}
+
+/* HEADER & NAV */
+.sp { position: relative; }
+.hdr{display:flex;align-items:center;gap:10px;padding:0 16px;height:50px;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--fn);font-size:21px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+.logo-ic{width:24px;height:24px;background:var(--ac);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.hdr-r{display:flex;gap:6px;margin-left:auto}
+.iBtn{width:30px;height:30px;border-radius:6px;border:.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);background:none;}
+.snav{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:.5px solid var(--color-border-tertiary);padding:0 12px;background:var(--color-background-primary)}
+.stab{flex-shrink:0;padding:0 13px;height:40px;display:flex;align-items:center;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-secondary);cursor:pointer;border:none;background:none;border-bottom:2.5px solid transparent;}
+.stab.on{color:var(--ac);border-bottom-color:var(--ac)}
+
+/* BANNER & STANDINGS */
+.lbanner{padding:9px 16px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);flex-wrap:wrap}
+.lname{font-family:var(--fn);font-size:17px;font-weight:600;}
+.bdg{font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;text-transform:uppercase;background:var(--color-background-tertiary);color:var(--color-text-tertiary);border:.5px solid var(--color-border-tertiary)}
+.bdg-live{background:var(--ac);color:#fff;border:none;}
+
+.qstand{display:flex;align-items:center;gap:5px;padding:8px 16px;overflow-x:auto;scrollbar-width:none;border-bottom:.5px solid var(--color-border-tertiary)}
+.qsl{font-size:10px;font-weight:500;text-transform:uppercase;color:var(--color-text-tertiary);flex-shrink:0;}
+.qdv{width:1px;height:18px;background:var(--color-border-tertiary);margin:0 5px}
+.qsi{display:flex;align-items:center;gap:5px;padding:3px 10px;border:.5px solid var(--color-border-tertiary);border-radius:20px;font-size:11px;background: var(--color-background-secondary)}
+.qsteam{font-weight:500}
+
+/* MAIN CONTENT */
+.main{max-width:1100px;margin:0 auto;padding:0 16px}
+.sh{display:flex;align-items:baseline;gap:8px;padding:18px 0 11px}
+.st{font-family:var(--fn);font-size:19px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.sct{font-size:11px;color:var(--color-text-tertiary)}
+
+/* UPCOMING GRID */
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;margin-bottom:4px}
+.ucard{border:.5px solid var(--color-border-tertiary);border-radius:12px;padding:13px 14px;background:var(--color-background-secondary);transition:border-color .12s}
+.ucard:hover{border-color:var(--ac)}
+.ucm{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:11px;font-family:var(--fm);color:var(--color-text-secondary)}
+.match{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.tm{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.tl{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fn);font-size:12px;font-weight:600;}
+.tn{font-size:11px;font-weight:600;color:#fff;text-align:center;line-height:1.2}
+.trec{font-size:10px;color:var(--color-text-tertiary);font-family:var(--fm)}
+.vs{font-size:12px;color:var(--color-text-tertiary)}
+
+/* RECENT GAMES TABLE */
+.twrap{overflow-x:auto;border:.5px solid var(--color-border-tertiary);border-radius:12px;margin-bottom:28px;background: var(--color-background-secondary)}
+.gt{width:100%;border-collapse:collapse;font-size:13px}
+.gt th{text-align:left;padding:9px 13px;font-size:9px;font-weight:500;text-transform:uppercase;color:var(--color-text-tertiary);border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.gt td{padding:11px 13px;border-bottom:.5px solid var(--color-border-tertiary);vertical-align:middle;white-space:nowrap;background:var(--color-background-primary);color:#fff;}
+.mw{font-weight:600;font-size:13px;color:#ffffff}
+.ml{font-weight:400;font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.sc{font-family:var(--fm);font-size:13px;color:#ffffff}
+
+/* LINKS & BUTTONS */
+.pn{font-size:12px;font-weight:600;color:var(--color-text-secondary);text-decoration:none;transition: color 0.12s}
+.pn:hover{color:#ffffff;text-decoration:underline}
+.rb{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:6px 12px;border-radius:6px;color:#ffffff;background:#22c55e;text-decoration:none;border:none;cursor:pointer;}
+.rb:hover{background:#1ea34d;box-shadow: 0 0 8px rgba(34, 197, 94, 0.4)}
+.pill{display:inline-flex;padding:2px 7px;border-radius:4px;font-family:var(--fm);font-size:11px}
+.pm{background:var(--color-background-tertiary);color:var(--color-text-secondary)}
+.pc{background:var(--acl);color:var(--ac)}
+
+.sport{display:none}
+.sport.active{display:block}
+@media(max-width:680px){.hm{display:none}.ugrid{grid-template-columns:1fr 1fr}}
+</style>
+
+<div id="modalOverlay">
+  <div id="modalContainer">
+    <button id="closeModal">Exit Recap</button>
+    <iframe id="modalIframe" src=""></iframe>
+  </div>
+</div>
+
+<div class="sp">
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-ic"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8.5 1L3.5 7.5H7L4 12L11 5.5H7.5Z" fill="#fff"/></svg></div>
+      StatPulse
+    </div>
+    <div class="hdr-r">
+      <button class="iBtn"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor"><circle cx="5.5" cy="5.5" r="3.8" stroke-width="1.2"/><path d="M8.5 8.5L12 12" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+
+  <div class="snav">
+    <button class="stab">NFL</button>
+    <button class="stab on">NBA</button>
+    <button class="stab">MLB</button>
+    <button class="stab">NHL</button>
+    <button class="stab">NCAAB</button>
+    <button class="stab">MLS</button>
+  </div>
+
+  <div id="nba" class="sport active">
+    <div class="lbanner">
+      <span class="lname">NBA</span><span class="qdv"></span>
+      <span>2025–26 Regular Season · Week 22</span>
+      <span class="bdg">14 games remaining</span>
+      <span class="bdg bdg-live">&#9654; 2 live now</span>
+    </div>
+
+    <div class="qstand">
+      <span class="qsl">East</span>
+      <div class="qsi"><span class="qsteam">BOS</span><span>58–16</span></div>
+      <div class="qsi"><span class="qsteam">CLE</span><span>52–22</span></div>
+      <div class="qsi"><span class="qsteam">NYK</span><span>44–30</span></div>
+      <span class="qdv"></span>
+      <span class="qsl">West</span>
+      <div class="qsi"><span class="qsteam">OKC</span><span>56–18</span></div>
+      <div class="qsi"><span class="qsteam">DEN</span><span>52–22</span></div>
+      <div class="qsi"><span class="qsteam">HOU</span><span>45–29</span></div>
+    </div>
+
+    <div class="main">
+      <div class="sh"><span class="st">Upcoming Games</span><span class="sct">4 games · next 48 hrs</span></div>
+      <div class="ugrid">
+        <div class="ucard">
+          <div class="ucm">Sat Mar 28 · 7:30 PM ET <span class="bdg">ESPN</span></div>
+          <div class="match">
+            <div class="tm"><div class="tl" style="background:#1D428A;color:#FFC72C">GSW</div><span class="tn">Warriors</span><span class="trec">35–39</span></div>
+            <span class="vs">@</span>
+            <div class="tm"><div class="tl" style="background:#007AC1;color:#fff">OKC</div><span class="tn">Thunder</span><span class="trec">56–18</span></div>
+          </div>
+        </div>
+        <div class="ucard">
+          <div class="ucm">Sat Mar 28 · 7:30 PM ET <span class="bdg">ESPN2</span></div>
+          <div class="match">
+            <div class="tm"><div class="tl" style="background:#98002E;color:#F9A01B">MIA</div><span class="tn">Heat</span><span class="trec">38–36</span></div>
+            <span class="vs">@</span>
+            <div class="tm"><div class="tl" style="background:#006BB6;color:#F58426">NYK</div><span class="tn">Knicks</span><span class="trec">44–30</span></div>
+          </div>
+        </div>
+        <div class="ucard">
+          <div class="ucm">Sun Mar 29 · 6:00 PM ET <span class="bdg">ABC</span></div>
+          <div class="match">
+            <div class="tm"><div class="tl" style="background:#007A33;color:#fff">BOS</div><span class="tn">Celtics</span><span class="trec">58–16</span></div>
+            <span class="vs">@</span>
+            <div class="tm"><div class="tl" style="background:#00471B;color:#EEE520">MIL</div><span class="tn">Bucks</span><span class="trec">42–32</span></div>
+          </div>
+        </div>
+        <div class="ucard">
+          <div class="ucm">Sun Mar 29 · 10:00 PM ET <span class="bdg">TNT</span></div>
+          <div class="match">
+            <div class="tm"><div class="tl" style="background:#0E2240;color:#FEC524">DEN</div><span class="tn">Nuggets</span><span class="trec">52–22</span></div>
+            <span class="vs">@</span>
+            <div class="tm"><div class="tl" style="background:#552583;color:#FDB927">LAL</div><span class="tn">Lakers</span><span class="trec">41–33</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sh"><span class="st">Recent Games</span><span class="sct">last 6 results</span></div>
+      <div class="twrap">
+        <table class="gt">
+          <thead>
+            <tr>
+              <th>Date</th><th>Matchup</th><th>Final Score</th><th>Recap</th><th>Margin</th><th class="hm">Top Performer</th><th class="hm">Pace</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dc">Mar 26</td>
+              <td><div class="mw">BOS def. MIA</div><div class="ml">TD Garden, Boston</div></td>
+              <td class="sc">118 – 107</td>
+              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+boston+vs+miami+march+26+2026+play+by+play+recap">Interactive Recap</a></td>
+              <td><span class="pill pm">+11</span></td>
+              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Jayson+Tatum">Jayson Tatum</a><div class="ml">34p · 8r · 5a</div></td>
+              <td class="hm" style="font-family:var(--fm); font-size:11px">101.4</td>
+            </tr>
+            <tr>
+              <td class="dc">Mar 26</td>
+              <td><div class="mw">DEN def. LAC</div><div class="ml">Ball Arena, Denver</div></td>
+              <td class="sc">124 – 108</td>
+              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+denver+vs+clippers+march+26+2026+play+by+play+recap">Interactive Recap</a></td>
+              <td><span class="pill pm">+16</span></td>
+              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Nikola+Jokic">Nikola Jokic</a><div class="ml">29p · 14r · 12a</div></td>
+              <td class="hm" style="font-family:var(--fm); font-size:11px">103.1</td>
+            </tr>
+            <tr>
+              <td class="dc">Mar 25</td>
+              <td><div class="mw">OKC def. GSW <span class="otag">OT</span></div><div class="ml">Paycom Center, OKC</div></td>
+              <td class="sc">116 – 110</td>
+              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+okc+vs+warriors+march+25+2026+play+by+play+recap">Interactive Recap</a></td>
+              <td><span class="pill pc">+6</span></td>
+              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Shai+Gilgeous-Alexander">Shai Gilgeous-Alexander</a><div class="ml">38p · 5r · 7a</div></td>
+              <td class="hm" style="font-family:var(--fm); font-size:11px">99.8</td>
+            </tr>
+            <tr>
+              <td class="dc">Mar 25</td>
+              <td><div class="mw">NYK def. PHI <span class="otag">3OT</span></div><div class="ml">Madison Square Garden</div></td>
+              <td class="sc">139 – 132</td>
+              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+knicks+vs+76ers+march+25+2026+play+by+play+recap">Interactive Recap</a></td>
+              <td><span class="pill pc">+7</span></td>
+              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Jalen+Brunson">Jalen Brunson</a><div class="ml">47p · 4r · 9a</div></td>
+              <td class="hm" style="font-family:var(--fm); font-size:11px">107.2</td>
+            </tr>
+            <tr>
+              <td class="dc">Mar 24</td>
+              <td><div class="mw">CLE def. MIL</div><div class="ml">Rocket Mortgage FieldHouse</div></td>
+              <td class="sc">103 – 97</td>
+              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+cleveland+vs+milwaukee+march+24+2026+play+by+play+recap">Interactive Recap</a></td>
+              <td><span class="pill pm">+6</span></td>
+              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+Donovan+Mitchell">Donovan Mitchell</a><div class="ml">26p · 3r · 6a</div></td>
+              <td class="hm" style="font-family:var(--fm); font-size:11px">96.1</td>
+            </tr>
+            <tr>
+              <td class="dc">Mar 24</td>
+              <td><div class="mw">LAL def. PHX</div><div class="ml">Crypto.com Arena, LA</div></td>
+              <td class="sc">114 – 106</td>
+              <td><a class="rb modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+lakers+vs+suns+march+24+2026+play+by+play+recap">Interactive Recap</a></td>
+              <td><span class="pill pm">+8</span></td>
+              <td class="hm"><a class="pn modal-trigger" href="https://chat.popular-searches-now.com/tldr?content=nba+LeBron+James">LeBron James</a><div class="ml">27p · 7r · 9a</div></td>
+              <td class="hm" style="font-family:var(--fm); font-size:11px">100.3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const overlay = document.getElementById('modalOverlay');
+  const iframe = document.getElementById('modalIframe');
+  const closeBtn = document.getElementById('closeModal');
+  const triggers = document.querySelectorAll('.modal-trigger');
+
+  function openModal(e) {
+    e.preventDefault();
+    const url = this.getAttribute('href');
+    iframe.src = url;
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    overlay.style.display = 'none';
+    iframe.src = '';
+    document.body.style.overflow = 'auto';
+  }
+
+  triggers.forEach(t => t.addEventListener('click', openModal));
+  closeBtn.addEventListener('click', closeModal);
+  window.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
+});
+</script>
