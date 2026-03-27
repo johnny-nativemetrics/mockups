@@ -12,7 +12,7 @@
         :root {
             --ac: #ff4d4d;
             --acl: rgba(255, 77, 77, 0.15);
-            --link-color: #60a5fa; /* Modern blue for links */
+            --link-color: #60a5fa;
             --fn: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
             --fm: 'DM Mono', 'Courier New', monospace;
             --color-text-primary: #ffffff;
@@ -27,15 +27,15 @@
 
         body { background-color: var(--color-background-primary); font-family: -apple-system, sans-serif; color: #fff; line-height: 1.4; }
 
-        /* MODAL OVERLAY */
-        #modalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); z-index: 9999; }
-        #modalContainer { position: relative; width: 95%; height: 90%; max-width: 1300px; margin: 2.5% auto; background: #000; border: 1px solid var(--color-border-secondary); border-radius: 16px; overflow: hidden; }
+        /* MODAL SYSTEM */
+        #modalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(8px); z-index: 9999; }
+        #modalContainer { position: relative; width: 94%; height: 88%; max-width: 1300px; margin: 3% auto; background: #000; border: 1px solid var(--color-border-secondary); border-radius: 16px; overflow: hidden; }
         #modalIframe { width: 100%; height: 100%; border: none; background: #fff; }
         #closeModal { position: absolute; top: 15px; right: 20px; background: var(--ac); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: var(--fn); font-weight: 600; cursor: pointer; z-index: 10001; text-transform: uppercase; }
 
-        /* HEADER & DASHBOARD */
+        /* LAYOUT components */
         .hdr{display:flex;align-items:center;padding:0 16px;height:55px;border-bottom:1px solid var(--color-border-tertiary);background:var(--color-background-primary)}
-        .logo{display:flex;align-items:center;gap:10px;font-family:var(--fn);font-size:22px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+        .logo{display:flex;align-items:center;gap:10px;font-family:var(--fn);font-size:22px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
         .logo-ic{width:26px;height:26px;background:var(--ac);border-radius:6px;display:flex;align-items:center;justify-content:center}
         .snav{display:flex;overflow-x:auto;border-bottom:1px solid var(--color-border-tertiary);padding:0 12px;background:var(--color-background-primary);scrollbar-width:none;}
         .snav::-webkit-scrollbar { display: none; }
@@ -45,9 +45,10 @@
         .main{max-width:1100px;margin:0 auto;padding:0 16px}
         .sh{display:flex;align-items:baseline;gap:8px;padding:24px 0 12px; font-family: var(--fn); font-size: 20px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--color-border-tertiary); margin-bottom: 15px;}
         
-        /* GRID & CARDS */
+        /* UPCOMING GRID (Interactive) */
         .ugrid{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:12px;margin-bottom:30px}
-        .ucard{border:1px solid var(--color-border-tertiary);border-radius:14px;padding:16px;background:var(--color-background-secondary);}
+        .ucard{border:1px solid var(--color-border-tertiary);border-radius:14px;padding:16px;background:var(--color-background-secondary);transition: all 0.15s ease-in-out; cursor: pointer;}
+        .ucard:hover{border-color:var(--ac); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(212, 47, 47, 0.1);}
         .ucm{font-size:11px; font-family: var(--fm); color: var(--color-text-secondary); margin-bottom: 14px; display: flex; justify-content: space-between;}
         .match-upc{display:flex;align-items:center;justify-content:space-between;gap:10px;}
         .tm{text-align:center; flex:1;}
@@ -57,14 +58,13 @@
         /* RECENT GAMES TABLE */
         .twrap { border:1px solid var(--color-border-tertiary); border-radius:12px; overflow: hidden; background: var(--color-background-secondary); margin-bottom: 50px;}
         .gt { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .gt th { text-align: left; padding: 14px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--color-text-tertiary); background: var(--color-background-secondary); border-bottom: 1px solid var(--color-border-tertiary); }
+        .gt th { text-align: left; padding: 14px; font-size: 9px; font-weight: 600; text-transform: uppercase; color: var(--color-text-tertiary); background: var(--color-background-secondary); border-bottom: 1px solid var(--color-border-tertiary); }
         .gt td { padding: 16px 14px; border-bottom: 1px solid var(--color-border-tertiary); background: var(--color-background-primary); color: #fff; vertical-align: middle; }
         
         .mw { font-weight: 600; color: #fff; font-size: 14px; }
         .ml { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px;}
         .sc { font-family: var(--fm); font-weight: 600; color: #fff; }
         
-        /* ENHANCED PLAYER LINKS */
         .pn { 
             color: var(--link-color); 
             text-decoration: none; 
@@ -73,19 +73,17 @@
             align-items: center; 
             gap: 4px; 
             border-bottom: 1px dashed rgba(96, 165, 250, 0.4);
-            padding-bottom: 1px;
+            cursor: pointer;
         }
         .pn:hover { border-bottom-style: solid; color: #fff; }
-        .pn svg { opacity: 0.7; }
 
-        .rb { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; padding: 8px 16px; border-radius: 8px; color: #fff; background: #22c55e; text-decoration: none; border: none; transition: background 0.2s; cursor: pointer; }
-        .rb:hover { background: #1ea34d; }
+        .rb { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; padding: 8px 16px; border-radius: 8px; color: #fff; background: #22c55e; text-decoration: none; border: none; cursor: pointer; }
         
         .pill { padding: 3px 10px; border-radius: 5px; font-family: var(--fm); font-size: 11px; font-weight: 600;}
         .pm { background: var(--color-background-tertiary); color: var(--color-text-secondary); }
         .pc { background: var(--acl); color: var(--ac); }
 
-        /* MOBILE OPTIMIZED (SCORECARD STYLE) */
+        /* MOBILE SCORECARD (UNDER 800PX) */
         @media (max-width: 800px) {
             .gt thead { display: none; }
             .gt tr { 
@@ -97,8 +95,6 @@
                 border-radius: 16px;
             }
             .gt td { display: block; border: none; padding: 8px 0; background: transparent; }
-            
-            /* Hierarchy for Scorecard */
             .gt td[data-label="Matchup"] { padding-bottom: 2px; }
             .mw { font-size: 18px; display: block; }
             .gt td[data-label="Score"] { padding-top: 0; padding-bottom: 15px; border-bottom: 1px solid var(--color-border-tertiary); }
@@ -112,17 +108,16 @@
                 border-bottom: 1px solid var(--color-border-tertiary);
             }
             .mobile-stat-box { display: flex; flex-direction: column; gap: 3px; }
-            .mobile-stat-label { font-size: 10px; text-transform: uppercase; color: var(--color-text-tertiary); font-weight: 700; letter-spacing: 0.05em; }
+            .mobile-stat-label { font-size: 10px; text-transform: uppercase; color: var(--color-text-tertiary); font-weight: 700; }
             .mobile-stat-val { font-size: 13px; font-weight: 600; color: #fff; }
 
             .gt td[data-label="Recap"] { padding: 15px 0 0; }
-            .rb { width: 100%; justify-content: center; padding: 14px; font-size: 12px; }
+            .rb { width: 100%; justify-content: center; padding: 14px; }
 
-            /* Grid items hidden on Desktop but labeled for Mobile */
             .gt td[data-label="Date"], 
             .gt td[data-label="Margin"], 
             .gt td[data-label="Top Performer"], 
-            .gt td[data-label="Total Pts"], 
+            .gt td[data-label="Pts"], 
             .gt td[data-label="Pace"] { display: none; }
 
             .ugrid { grid-template-columns: 1fr; }
@@ -134,7 +129,7 @@
 
 <div id="modalOverlay">
   <div id="modalContainer">
-    <button id="closeModal">Exit Recap</button>
+    <button id="closeModal">Exit Scouting</button>
     <iframe id="modalIframe" src="about:blank"></iframe>
   </div>
 </div>
@@ -154,7 +149,7 @@
   <div class="main">
     <div class="sh">Upcoming Games</div>
     <div class="ugrid">
-      <div class="ucard">
+      <div class="ucard modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=warriors+vs+thunder+march+28+2026+game+expectations+and+predictions">
         <div class="ucm">Sat Mar 28 · 7:30 PM <span class="pill pm">ESPN</span></div>
         <div class="match-upc">
           <div class="tm"><div class="tl" style="background:#1D428A;color:#FFC72C">GSW</div><span class="tn">Warriors</span></div>
@@ -162,7 +157,7 @@
           <div class="tm"><div class="tl" style="background:#007AC1;color:#fff">OKC</div><span class="tn">Thunder</span></div>
         </div>
       </div>
-      <div class="ucard">
+      <div class="ucard modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=heat+vs+knicks+march+28+2026+game+expectations+and+predictions">
         <div class="ucm">Sat Mar 28 · 7:30 PM <span class="pill pm">ESPN2</span></div>
         <div class="match-upc">
           <div class="tm"><div class="tl" style="background:#98002E;color:#F9A01B">MIA</div><span class="tn">Heat</span></div>
@@ -170,7 +165,7 @@
           <div class="tm"><div class="tl" style="background:#006BB6;color:#F58426">NYK</div><span class="tn">Knicks</span></div>
         </div>
       </div>
-      <div class="ucard">
+      <div class="ucard modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=celtics+vs+bucks+march+29+2026+game+expectations+and+predictions">
         <div class="ucm">Sun Mar 29 · 6:00 PM <span class="pill pm">ABC</span></div>
         <div class="match-upc">
           <div class="tm"><div class="tl" style="background:#007A33;color:#fff">BOS</div><span class="tn">Celtics</span></div>
@@ -178,7 +173,7 @@
           <div class="tm"><div class="tl" style="background:#00471B;color:#EEE520">MIL</div><span class="tn">Bucks</span></div>
         </div>
       </div>
-      <div class="ucard">
+      <div class="ucard modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nuggets+vs+lakers+march+29+2026+game+expectations+and+predictions">
         <div class="ucm">Sun Mar 29 · 10:00 PM <span class="pill pm">TNT</span></div>
         <div class="match-upc">
           <div class="tm"><div class="tl" style="background:#0E2240;color:#FEC524">DEN</div><span class="tn">Nuggets</span></div>
@@ -242,52 +237,6 @@
             </td>
             <td data-label="Pts" style="font-family:var(--fm)">232</td>
             <td data-label="Pace" style="font-family:var(--fm)">103.1</td>
-          </tr>
-          <tr>
-            <td data-label="Date">Mar 25</td>
-            <td data-label="Matchup"><div class="mw">OKC def. GSW</div><div class="ml">Paycom Center, OKC</div></td>
-            <td data-label="Score"><div class="sc">116 – 110</div></td>
-            <td class="mobile-only-cell" style="display:none">
-                <div class="mobile-stats-grid">
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 25</span></div>
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+6</span></div>
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
-                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Shai+Gilgeous-Alexander">Shai Gilgeous-Alexander <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
-                    </div>
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">99.8</span></div>
-                </div>
-            </td>
-            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+okc+vs+warriors+march+25+2026+play+by+play+recap">Interactive Recap</button></td>
-            <td data-label="Margin"><span class="pill pc">+6</span></td>
-            <td data-label="Top Performer">
-                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Shai+Gilgeous-Alexander">Shai Gilgeous-Alexander <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
-                <div class="ml">38p · 5r · 7a</div>
-            </td>
-            <td data-label="Pts" style="font-family:var(--fm)">226</td>
-            <td data-label="Pace" style="font-family:var(--fm)">99.8</td>
-          </tr>
-          <tr>
-            <td data-label="Date">Mar 25</td>
-            <td data-label="Matchup"><div class="mw">NYK def. PHI</div><div class="ml">Madison Sq Garden</div></td>
-            <td data-label="Score"><div class="sc">139 – 132</div></td>
-            <td class="mobile-only-cell" style="display:none">
-                <div class="mobile-stats-grid">
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Date</span><span class="mobile-stat-val">Mar 25</span></div>
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Margin</span><span class="mobile-stat-val">+7</span></div>
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Top Performer</span>
-                        <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Jalen+Brunson">Jalen Brunson <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
-                    </div>
-                    <div class="mobile-stat-box"><span class="mobile-stat-label">Pace</span><span class="mobile-stat-val">107.2</span></div>
-                </div>
-            </td>
-            <td data-label="Recap"><button class="rb modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+knicks+vs+76ers+march+25+2026+play+by+play+recap">Interactive Recap</button></td>
-            <td data-label="Margin"><span class="pill pc">+7</span></td>
-            <td data-label="Top Performer">
-                <a href="#" class="pn modal-trigger" data-url="https://chat.popular-searches-now.com/tldr?content=nba+Jalen+Brunson">Jalen Brunson <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg></a>
-                <div class="ml">47p · 4r · 9a</div>
-            </td>
-            <td data-label="Pts" style="font-family:var(--fm)">271</td>
-            <td data-label="Pace" style="font-family:var(--fm)">107.2</td>
           </tr>
           <tr>
             <td data-label="Date">Mar 24</td>
@@ -358,6 +307,7 @@
 
     document.querySelectorAll('.modal-trigger').forEach(trigger => {
         trigger.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents bubbling issues
             e.preventDefault();
             const url = trigger.getAttribute('data-url');
             iframe.src = url; 
