@@ -1,0 +1,103 @@
+/*
+ * zippy-icon-animated.css
+ * Animated icon override for the Zippy chatbot toggle button.
+ * Self-host this file and link it AFTER chatbot.css — no HTML changes needed.
+ *
+ * Effect: sonar pulse ring + three-dot typing indicator
+ */
+
+/* ── 1. Sonar ring ── */
+/* Draws attention to the button; pulses outward and fades */
+
+.zippy-toggle {
+    position: relative;  /* anchor for the ::after pseudo-element */
+    overflow: visible;   /* let the ring escape the button bounds   */
+}
+
+.zippy-toggle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid #49aff6;
+    opacity: 0;
+    animation: zippySonar 2.4s ease-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes zippySonar {
+    0%   { transform: scale(1);    opacity: 0.75; }
+    70%  { transform: scale(1.8);  opacity: 0;    }
+    100% { transform: scale(1.8);  opacity: 0;    }
+}
+
+
+/* ── 2. Hide the static SVG icon ── */
+
+.zippy-toggle-icon svg {
+    display: none;
+}
+
+
+/* ── 3. Three-dot typing indicator ── */
+/*
+ * The .zippy-toggle-icon <span> becomes the centre dot.
+ * ::before is the left dot, ::after is the right dot.
+ * Each animates on a staggered delay for a wave effect.
+ */
+
+.zippy-toggle-icon {
+    position: relative;
+    display: block;          /* override the original inline-flex */
+    width:  6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: zippyDot 1.4s ease-in-out infinite;
+    animation-delay: 0.2s;  /* centre dot fires second */
+}
+
+/* Left dot */
+.zippy-toggle-icon::before {
+    content: '';
+    position: absolute;
+    top:  0;
+    left: -10px;
+    width:  6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: zippyDot 1.4s ease-in-out infinite;
+    animation-delay: 0s;    /* fires first */
+}
+
+/* Right dot */
+.zippy-toggle-icon::after {
+    content: '';
+    position: absolute;
+    top:  0;
+    left: 10px;
+    width:  6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: zippyDot 1.4s ease-in-out infinite;
+    animation-delay: 0.4s;  /* fires last */
+}
+
+@keyframes zippyDot {
+    0%,  55%, 100% { transform: translateY(0);   opacity: 1;    }
+    27%            { transform: translateY(-7px); opacity: 0.85; }
+}
+
+
+/* ── 4. Mobile: match the slightly smaller toggle ── */
+
+@media (max-width: 480px) {
+    @keyframes zippySonar {
+        0%   { transform: scale(1);    opacity: 0.7; }
+        70%  { transform: scale(1.75); opacity: 0;   }
+        100% { transform: scale(1.75); opacity: 0;   }
+    }
+}
