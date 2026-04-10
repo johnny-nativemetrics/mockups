@@ -101,3 +101,15 @@
         100% { transform: scale(1.75); opacity: 0;   }
     }
 }
+
+
+/* ── 5. Clear the reCAPTCHA badge ── */
+#zippy-chatbot-container {
+    bottom: 90px; /* push above the ~60px reCAPTCHA badge */
+}
+
+@media (max-width: 480px) {
+    #zippy-chatbot-container {
+        bottom: 82px;
+    }
+}
