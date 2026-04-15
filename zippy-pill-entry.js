@@ -1,38 +1,20 @@
 /**
- * zippy-pill-entry.js
+ * zippy-pill-entry.js  (v2)
  *
- * Injects the "Ask Anything About This Topic" pill entry point into the page,
- * manages the pill → input → chatbot transition, and hands off the typed
- * message to the existing Zippy chatbot widget.
- *
- * Load AFTER chatbot.js (and its CSS companions).
- * No other dependencies required.
- *
- * HOW IT WORKS
- *   1. On DOMContentLoaded a pill is inserted into <body>.
- *   2. Clicking the pill hides it and reveals an inline text input + Send button.
- *   3. On Send (button click or Enter key):
- *        a. The container plays its exit animation.
- *        b. The chatbot window is opened by simulating a click on .zippy-toggle.
- *        c. After a brief delay the typed text is injected into .zippy-input
- *           and the send button (.zippy-send-btn) is programmatically clicked.
- *        d. The pill container is hidden permanently for this page session.
- *
- * CUSTOMISATION
- *   • PILL_LABEL      — button copy
- *   • INPUT_PLACEHOLDER — placeholder text in the expanded input
- *   • SEND_LABEL      — Send button label
- *   • OPEN_DELAY_MS   — ms to wait after opening the chatbot before injecting text
+ * Changes from v1:
+ *   - Watches .zippy-window via MutationObserver; when the chatbot is closed
+ *     the pill resets and bounces back into view.
+ *   - Pill is no longer permanently hidden after a send — it returns.
  */
 
 (function () {
     'use strict';
 
     /* ── Config ─────────────────────────────────────────── */
-    var PILL_LABEL       = 'Ask Anything About This Topic';
+    var PILL_LABEL        = 'Ask Anything About This Topic';
     var INPUT_PLACEHOLDER = 'Ask anything about this topic\u2026';
-    var SEND_LABEL       = 'Send';
-    var OPEN_DELAY_MS    = 320;   /* time for the chatbot window open animation */
+    var SEND_LABEL        = 'Send';
+    var OPEN_DELAY_MS     = 320; /* wait for chatbot open animation before injecting text */
 
 
     /* ── Build HTML ─────────────────────────────────────── */
@@ -60,27 +42,86 @@
         '</div>';
 
 
-    /* ── DOM references (set after insertion) ─────────────── */
+    /* ── DOM references ──────────────────────────────────── */
     var pill, expanded, inputField, sendBtn;
 
 
-    /* ── Open chatbot + inject message ─────────────────── */
+    /* ── State ───────────────────────────────────────────── */
+    var chatbotOpen = false;  /* tracks whether we opened the chatbot */
+
+
+    /* ── Show pill (used on init and on chatbot close) ───── */
+
+    function showPill(isReturn) {
+        container.style.display = '';
+
+        /* Reset to pill state */
+        expanded.classList.remove('zippy-pill-active');
+        inputField.value = '';
+        pill.style.display = '';
+
+        if (isReturn) {
+            /* Bounce-back animation */
+            container.classList.remove('zippy-pill-leaving');
+            container.classList.remove('zippy-pill-returning'); /* reset if mid-flight */
+            void container.offsetWidth;                          /* force reflow         */
+            container.classList.add('zippy-pill-returning');
+
+            container.addEventListener('animationend', function onEnd(e) {
+                if (e.animationName === 'zippyPillReturn' ||
+                    e.animationName === 'zippyPillReturnMobile') {
+                    container.classList.remove('zippy-pill-returning');
+                    container.removeEventListener('animationend', onEnd);
+                }
+            });
+        }
+    }
+
+
+    /* ── Watch the chatbot window for open/close ─────────── */
+
+    function watchChatbotWindow() {
+        /*
+         * The chatbot shows/hides .zippy-window by toggling display: flex / none.
+         * MutationObserver on the style attribute catches this reliably.
+         */
+        var win = document.querySelector('.zippy-window');
+        if (!win) return;
+
+        var observer = new MutationObserver(function () {
+            var isNowOpen = win.style.display === 'flex';
+
+            if (!isNowOpen && chatbotOpen) {
+                /* Chatbot was just closed — bring the pill back */
+                chatbotOpen = false;
+                showPill(true);
+            }
+
+            if (isNowOpen) {
+                chatbotOpen = true;
+            }
+        });
+
+        observer.observe(win, { attributes: true, attributeFilter: ['style'] });
+    }
+
+
+    /* ── Open chatbot + inject message ──────────────────── */
 
     function openChatbotWithMessage(text) {
-        /* 1. Play leave animation on the pill container */
+        /* Play leave animation */
         container.classList.add('zippy-pill-leaving');
 
-        /* 2. Trigger chatbot open */
+        /* Open chatbot window */
         var toggle = document.querySelector('.zippy-toggle');
         if (toggle) {
             var win = document.querySelector('.zippy-window');
-            var isOpen = win && win.style.display === 'flex';
-            if (!isOpen) {
+            if (!win || win.style.display !== 'flex') {
                 toggle.click();
             }
         }
 
-        /* 3. After animation finishes, inject text and fire send */
+        /* Inject text after the window animation completes */
         setTimeout(function () {
             container.style.display = 'none';
 
@@ -88,13 +129,12 @@
             var chatSend  = document.querySelector('.zippy-send-btn');
 
             if (chatInput && chatSend) {
-                /* Set value and fire a native input event so any framework
-                   listeners (React synthetic events etc.) pick up the change */
-                var nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                /* Use native setter so React/framework listeners fire */
+                var descriptor = Object.getOwnPropertyDescriptor(
                     window.HTMLInputElement.prototype, 'value'
                 );
-                if (nativeInputValueSetter && nativeInputValueSetter.set) {
-                    nativeInputValueSetter.set.call(chatInput, text);
+                if (descriptor && descriptor.set) {
+                    descriptor.set.call(chatInput, text);
                 } else {
                     chatInput.value = text;
                 }
@@ -119,52 +159,50 @@
 
     function handleSend() {
         var text = inputField.value.trim();
-        if (!text) {
-            inputField.focus();
-            return;
-        }
+        if (!text) { inputField.focus(); return; }
         openChatbotWithMessage(text);
     }
 
 
-    /* ── Wire up events ──────────────────────────────────── */
+    /* ── Init ────────────────────────────────────────────── */
 
     function init() {
         document.body.appendChild(container);
 
-        pill      = document.getElementById('zippy-pill');
-        expanded  = document.getElementById('zippy-pill-expanded');
+        pill       = document.getElementById('zippy-pill');
+        expanded   = document.getElementById('zippy-pill-expanded');
         inputField = document.getElementById('zippy-pill-input');
-        sendBtn   = document.getElementById('zippy-pill-send');
+        sendBtn    = document.getElementById('zippy-pill-send');
 
-        /* Pill click / keyboard */
+        /* Pill interactions */
         pill.addEventListener('click', expandPill);
         pill.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                expandPill();
-            }
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); expandPill(); }
         });
 
-        /* Send button */
+        /* Send */
         sendBtn.addEventListener('click', handleSend);
-
-        /* Enter key in input */
         inputField.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSend();
-            }
-        });
-
-        /* Escape: collapse back to pill */
-        inputField.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter')  { e.preventDefault(); handleSend(); }
             if (e.key === 'Escape') {
                 expanded.classList.remove('zippy-pill-active');
                 inputField.value = '';
                 pill.style.display = '';
             }
         });
+
+        /*
+         * Start watching the chatbot window.
+         * If chatbot.js loads async the window element may not exist yet —
+         * retry until it appears.
+         */
+        var watchAttempts = 0;
+        var watchInterval = setInterval(function () {
+            if (document.querySelector('.zippy-window') || ++watchAttempts > 20) {
+                clearInterval(watchInterval);
+                watchChatbotWindow();
+            }
+        }, 250);
     }
 
 
