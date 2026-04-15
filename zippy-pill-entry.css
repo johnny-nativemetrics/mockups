@@ -1,0 +1,264 @@
+/*
+ * zippy-pill-entry.css
+ * Floating "Ask Anything About This Topic" pill — a secondary entry point
+ * for the Zippy chatbot.
+ *
+ * Load AFTER chatbot.css and zippy-icon-animated.css.
+ * Pair with zippy-pill-entry.js which injects the HTML and manages state.
+ *
+ * States
+ *   1. [default]  Animated pill floats at bottom-center (desktop) / bottom-left (mobile)
+ *   2. [expanded]  Pill morphs into an inline text input + Send button
+ *   3. [sent]      Pill hides; chatbot window opens with the message pre-fired
+ */
+
+
+/* ─────────────────────────────────────────────
+   1. Container positioning
+   ───────────────────────────────────────────── */
+
+#zippy-pill-container {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9998;                 /* just below the chatbot window (10000) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    /* Don't interfere with pointer events when hidden */
+    pointer-events: none;
+}
+
+#zippy-pill-container > * {
+    pointer-events: auto;
+}
+
+
+/* ─────────────────────────────────────────────
+   2. Pill — default state
+   ───────────────────────────────────────────── */
+
+.zippy-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 26px 13px 20px;
+    background: #49aff6;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    overflow: visible;
+
+    /* Typography */
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+
+    /* Shadow + transition */
+    box-shadow: 0 10px 28px rgba(73, 175, 246, 0.38);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    /* Intro animation */
+    animation: zippyPillIntro 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes zippyPillIntro {
+    from { opacity: 0; transform: translateY(16px) scale(0.9); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
+.zippy-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(73, 175, 246, 0.46);
+}
+
+.zippy-pill:active {
+    transform: translateY(0) scale(0.97);
+}
+
+
+/* ── Sonar ring (adapts the circular sonar to pill shape) ── */
+
+.zippy-pill::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 999px;
+    border: 2px solid rgba(73, 175, 246, 0.85);
+    opacity: 0;
+    pointer-events: none;
+    animation: zippyPillSonar 2.6s ease-out infinite;
+}
+
+@keyframes zippyPillSonar {
+    0%   { transform: scale(1);    opacity: 0.72; }
+    65%  { transform: scale(1.1);  opacity: 0;    }
+    100% { transform: scale(1.1);  opacity: 0;    }
+}
+
+
+/* ── Three-dot typing indicator (left side of pill) ── */
+
+.zippy-pill-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.zippy-pill-dot {
+    display: block;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 50%;
+    animation: zippyPillDot 1.4s ease-in-out infinite;
+}
+
+.zippy-pill-dot:nth-child(1) { animation-delay: 0s;    }
+.zippy-pill-dot:nth-child(2) { animation-delay: 0.18s; }
+.zippy-pill-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes zippyPillDot {
+    0%, 55%, 100% { transform: translateY(0);   opacity: 1;    }
+    27%           { transform: translateY(-5px); opacity: 0.8; }
+}
+
+
+/* ─────────────────────────────────────────────
+   3. Expanded — inline input state
+   ───────────────────────────────────────────── */
+
+.zippy-pill-input-wrapper {
+    display: none;           /* toggled to flex by JS */
+    align-items: center;
+    gap: 8px;
+
+    /* Matches pill width feel but gives room to type */
+    min-width: 340px;
+    max-width: min(520px, calc(100vw - 48px));
+
+    padding: 6px 6px 6px 20px;
+    background: #fff;
+    border: 1.5px solid #9fd4ff;
+    border-radius: 999px;
+    box-shadow: 0 10px 32px rgba(73, 175, 246, 0.22);
+
+    animation: zippyInputReveal 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@keyframes zippyInputReveal {
+    from { opacity: 0; transform: scale(0.93); }
+    to   { opacity: 1; transform: scale(1);    }
+}
+
+.zippy-pill-input-wrapper.zippy-pill-active {
+    display: flex;
+}
+
+.zippy-pill-input-field {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    color: #535864;
+    caret-color: #49aff6;
+    line-height: 1;
+    padding: 9px 0;
+}
+
+.zippy-pill-input-field::placeholder {
+    color: #a8b3be;
+    font-weight: 400;
+}
+
+.zippy-pill-send-btn {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    background: #49aff6;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition: background 0.2s ease, transform 0.15s ease;
+    white-space: nowrap;
+}
+
+.zippy-pill-send-btn:hover {
+    background: #3aa3f0;
+}
+
+.zippy-pill-send-btn:active {
+    transform: scale(0.96);
+}
+
+/* Focus ring on the wrapper instead of the bare input */
+.zippy-pill-input-wrapper:focus-within {
+    border-color: #5cbbf8;
+    box-shadow: 0 10px 32px rgba(73, 175, 246, 0.22),
+                0 0 0 3px rgba(73, 175, 246, 0.14);
+}
+
+
+/* ─────────────────────────────────────────────
+   4. Exit animation (before chatbot opens)
+   ───────────────────────────────────────────── */
+
+#zippy-pill-container.zippy-pill-leaving {
+    animation: zippyPillLeave 0.22s ease-in forwards;
+    pointer-events: none;
+}
+
+@keyframes zippyPillLeave {
+    to { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.92); }
+}
+
+/* container is translateX(-50%) by default — leaving animation reapplies it */
+@media (max-width: 480px) {
+    #zippy-pill-container.zippy-pill-leaving {
+        animation-name: zippyPillLeaveMobile;
+    }
+    @keyframes zippyPillLeaveMobile {
+        to { opacity: 0; transform: translateY(8px) scale(0.92); }
+    }
+}
+
+
+/* ─────────────────────────────────────────────
+   5. Mobile overrides
+   ───────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+    #zippy-pill-container {
+        /* Shift left so it clears the reCAPTCHA badge bottom-right */
+        left: 14px;
+        right: auto;
+        transform: none;
+        bottom: 90px;           /* match the reCAPTCHA clearance in zippy-icon-animated.css */
+        justify-content: flex-start;
+    }
+
+    .zippy-pill {
+        font-size: 14px;
+        padding: 12px 22px 12px 18px;
+        gap: 8px;
+    }
+
+    .zippy-pill-input-wrapper {
+        min-width: 0;
+        width: calc(100vw - 28px);
+        max-width: calc(100vw - 28px);
+    }
+}
