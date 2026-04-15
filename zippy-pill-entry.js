@@ -1,10 +1,10 @@
 /**
- * zippy-pill-entry.js  (v2)
+ * zippy-pill-entry.js  (v3)
  *
- * Changes from v1:
- *   - Watches .zippy-window via MutationObserver; when the chatbot is closed
- *     the pill resets and bounces back into view.
- *   - Pill is no longer permanently hidden after a send — it returns.
+ * Changes from v2:
+ *   - iOS keyboard fix: uses visualViewport API to float the input above
+ *     the software keyboard when it opens on iOS Safari.
+ *   - Cleaned up stale reference to removed zippyPillReturnMobile keyframe.
  */
 
 (function () {
@@ -47,7 +47,48 @@
 
 
     /* ── State ───────────────────────────────────────────── */
-    var chatbotOpen = false;  /* tracks whether we opened the chatbot */
+    var chatbotOpen   = false;
+    var keyboardWatch = false; /* whether we're currently listening for keyboard changes */
+
+
+    /* ── iOS keyboard fix ────────────────────────────────────
+     *
+     * When the software keyboard opens on iOS Safari, window.innerHeight stays
+     * the same but window.visualViewport.height shrinks. The difference is the
+     * keyboard height. We move the container bottom up by that amount so the
+     * input floats just above the keyboard rather than hiding behind it.
+     *
+     * We only activate this listener while the pill input is expanded/focused,
+     * and tear it down when the input is dismissed.
+     */
+
+    function onViewportResize() {
+        var vv = window.visualViewport;
+        if (!vv) return;
+        var keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
+        if (keyboardHeight > 60) {
+            /* Keyboard is open — lift the container above it with a small gap */
+            container.style.bottom = (keyboardHeight + 12) + 'px';
+        } else {
+            /* Keyboard closed — let CSS take over again */
+            container.style.bottom = '';
+        }
+    }
+
+    function startKeyboardWatch() {
+        if (keyboardWatch || !window.visualViewport) return;
+        keyboardWatch = true;
+        window.visualViewport.addEventListener('resize', onViewportResize);
+        window.visualViewport.addEventListener('scroll', onViewportResize);
+    }
+
+    function stopKeyboardWatch() {
+        if (!keyboardWatch || !window.visualViewport) return;
+        keyboardWatch = false;
+        window.visualViewport.removeEventListener('resize', onViewportResize);
+        window.visualViewport.removeEventListener('scroll', onViewportResize);
+        container.style.bottom = ''; /* restore CSS-controlled position */
+    }
 
 
     /* ── Show pill (used on init and on chatbot close) ───── */
@@ -59,17 +100,16 @@
         expanded.classList.remove('zippy-pill-active');
         inputField.value = '';
         pill.style.display = '';
+        stopKeyboardWatch();
 
         if (isReturn) {
-            /* Bounce-back animation */
             container.classList.remove('zippy-pill-leaving');
-            container.classList.remove('zippy-pill-returning'); /* reset if mid-flight */
-            void container.offsetWidth;                          /* force reflow         */
+            container.classList.remove('zippy-pill-returning');
+            void container.offsetWidth; /* force reflow */
             container.classList.add('zippy-pill-returning');
 
             container.addEventListener('animationend', function onEnd(e) {
-                if (e.animationName === 'zippyPillReturn' ||
-                    e.animationName === 'zippyPillReturnMobile') {
+                if (e.animationName === 'zippyPillReturn') {
                     container.classList.remove('zippy-pill-returning');
                     container.removeEventListener('animationend', onEnd);
                 }
@@ -81,10 +121,6 @@
     /* ── Watch the chatbot window for open/close ─────────── */
 
     function watchChatbotWindow() {
-        /*
-         * The chatbot shows/hides .zippy-window by toggling display: flex / none.
-         * MutationObserver on the style attribute catches this reliably.
-         */
         var win = document.querySelector('.zippy-window');
         if (!win) return;
 
@@ -92,7 +128,6 @@
             var isNowOpen = win.style.display === 'flex';
 
             if (!isNowOpen && chatbotOpen) {
-                /* Chatbot was just closed — bring the pill back */
                 chatbotOpen = false;
                 showPill(true);
             }
@@ -109,10 +144,9 @@
     /* ── Open chatbot + inject message ──────────────────── */
 
     function openChatbotWithMessage(text) {
-        /* Play leave animation */
+        stopKeyboardWatch();
         container.classList.add('zippy-pill-leaving');
 
-        /* Open chatbot window */
         var toggle = document.querySelector('.zippy-toggle');
         if (toggle) {
             var win = document.querySelector('.zippy-window');
@@ -121,7 +155,6 @@
             }
         }
 
-        /* Inject text after the window animation completes */
         setTimeout(function () {
             container.style.display = 'none';
 
@@ -129,7 +162,6 @@
             var chatSend  = document.querySelector('.zippy-send-btn');
 
             if (chatInput && chatSend) {
-                /* Use native setter so React/framework listeners fire */
                 var descriptor = Object.getOwnPropertyDescriptor(
                     window.HTMLInputElement.prototype, 'value'
                 );
@@ -152,6 +184,17 @@
         pill.style.display = 'none';
         expanded.classList.add('zippy-pill-active');
         inputField.focus();
+        startKeyboardWatch(); /* begin watching for keyboard on iOS */
+    }
+
+
+    /* ── Collapse input → pill ───────────────────────────── */
+
+    function collapsePill() {
+        expanded.classList.remove('zippy-pill-active');
+        inputField.value = '';
+        pill.style.display = '';
+        stopKeyboardWatch();
     }
 
 
@@ -174,7 +217,7 @@
         inputField = document.getElementById('zippy-pill-input');
         sendBtn    = document.getElementById('zippy-pill-send');
 
-        /* Pill interactions */
+        /* Pill */
         pill.addEventListener('click', expandPill);
         pill.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); expandPill(); }
@@ -184,18 +227,23 @@
         sendBtn.addEventListener('click', handleSend);
         inputField.addEventListener('keydown', function (e) {
             if (e.key === 'Enter')  { e.preventDefault(); handleSend(); }
-            if (e.key === 'Escape') {
-                expanded.classList.remove('zippy-pill-active');
-                inputField.value = '';
-                pill.style.display = '';
-            }
+            if (e.key === 'Escape') { collapsePill(); }
         });
 
-        /*
-         * Start watching the chatbot window.
-         * If chatbot.js loads async the window element may not exist yet —
-         * retry until it appears.
-         */
+        /* iOS: if the user dismisses the keyboard by tapping outside the
+           input (but not the send button), collapse back to pill state */
+        inputField.addEventListener('blur', function () {
+            /* Small delay — if blur was caused by tapping Send, handleSend
+               fires first and we don't want to collapse before it runs */
+            setTimeout(function () {
+                if (document.activeElement !== sendBtn &&
+                    document.activeElement !== inputField) {
+                    collapsePill();
+                }
+            }, 200);
+        });
+
+        /* Watch chatbot window */
         var watchAttempts = 0;
         var watchInterval = setInterval(function () {
             if (document.querySelector('.zippy-window') || ++watchAttempts > 20) {
