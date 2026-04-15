@@ -1,9 +1,11 @@
 /*
- * zippy-pill-entry.css  (v2)
+ * zippy-pill-entry.css  (v3)
  * - Hides the .zippy-toggle floating button (pill is the new entry point)
  * - Replaces the sonar ring with a glow-pulse + shimmer sweep that works
  *   uniformly across the full pill shape, not just the ends
  * - Pill reappears when the chatbot window is closed (driven by JS)
+ * - White border separates pill from page content behind it
+ * - Centered on both desktop and mobile
  */
 
 
@@ -59,6 +61,7 @@
     font-weight: 700;
     letter-spacing: 0.01em;
 
+    border: 2px solid rgba(255, 255, 255, 0.85);
     box-shadow: 0 10px 28px rgba(73, 175, 246, 0.38);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
@@ -259,11 +262,11 @@
 
 @media (max-width: 480px) {
     #zippy-pill-container {
-        left: 14px;
+        left: 50%;
         right: auto;
-        transform: none;
-        bottom: 14px;
-        justify-content: flex-start;
+        transform: translateX(-50%);
+        bottom: 20px;
+        justify-content: center;
     }
 
     .zippy-pill {
@@ -278,19 +281,12 @@
         max-width: calc(100vw - 28px);
     }
 
-    /* No translateX offset on mobile — adjust leave/return accordingly */
+    /* Mobile uses same transform as desktop — reuse the same keyframes */
     #zippy-pill-container.zippy-pill-leaving {
-        animation-name: zippyPillLeaveMobile;
-    }
-    @keyframes zippyPillLeaveMobile {
-        to { opacity: 0; transform: translateY(8px) scale(0.92); }
+        animation-name: zippyPillLeave;
     }
 
     #zippy-pill-container.zippy-pill-returning {
-        animation-name: zippyPillReturnMobile;
-    }
-    @keyframes zippyPillReturnMobile {
-        from { opacity: 0; transform: translateY(14px) scale(0.88); }
-        to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        animation-name: zippyPillReturn;
     }
 }
