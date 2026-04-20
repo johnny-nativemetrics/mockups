@@ -1,0 +1,311 @@
+/*
+ * spark-dd.css — "Deeper Dive / AI Overview" layout override for Zipline Spark.
+ *
+ * Load AFTER spark.css. This file overrides the inline question widget only;
+ * the answer drawer/sidebar styles from spark.css are preserved intact.
+ *
+ * Requires spark-dd-patch.js to inject the summary block and input bar.
+ */
+
+/* ─────────────────────────────────────────────────────────────
+   Container
+   ───────────────────────────────────────────────────────────── */
+.zipline-spark {
+  background: #ebebf3;
+  border-radius: 18px;
+  padding: 18px 20px 16px;
+  margin: 1.25rem 0 1.5rem;
+  color: #1a1a2e;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Header — "AI Overview ⓘ" style
+   ───────────────────────────────────────────────────────────── */
+.zipline-spark__head {
+  margin-bottom: 11px;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Hide the bolt‑icon bubble; heading carries its own weight */
+.zipline-spark__head-star {
+  display: none;
+}
+
+.zipline-spark__head-title {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #12121e;
+  letter-spacing: -0.018em;
+}
+
+/* ⓘ info badge injected by patch.js */
+.zs-dd-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  border: 1.5px solid #8888aa;
+  color: #8888aa;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: middle;
+  margin-left: 5px;
+  cursor: help;
+  flex-shrink: 0;
+  transition: border-color 0.14s, color 0.14s;
+}
+.zs-dd-info-icon:hover {
+  border-color: #5566aa;
+  color: #5566aa;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Summary row  (injected by patch.js, sits between head & carousel)
+   ───────────────────────────────────────────────────────────── */
+.zs-dd-summary-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.zs-dd-summary-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  line-height: 1.58;
+  color: #1a1a2e;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.zs-dd-summary-text--expanded {
+  display: block;          /* cancels -webkit-box clamp */
+  overflow: visible;
+}
+
+.zs-dd-summary-text--loading {
+  color: #8888aa;
+  font-style: italic;
+}
+
+.zs-dd-full-link {
+  white-space: nowrap;
+  font-size: 0.87rem;
+  font-weight: 700;
+  color: #12121e;
+  text-decoration: none;
+  flex-shrink: 0;
+  padding-bottom: 2px;      /* align with last text baseline */
+  transition: color 0.13s;
+}
+.zs-dd-full-link:hover {
+  color: #2244cc;
+  text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Carousel → vertical question list
+   ───────────────────────────────────────────────────────────── */
+.zipline-spark__carousel {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+/* Kill nav arrows */
+.zipline-spark__nav {
+  display: none !important;
+}
+
+/* Track wrapper: no horizontal scroll */
+.zipline-spark__track-wrap,
+.zipline-spark__carousel--static .zipline-spark__track-wrap {
+  overflow: visible !important;
+}
+
+/* Track: vertical flex in both scroll and static modes */
+.zipline-spark__track,
+.zipline-spark__carousel--static .zipline-spark__track {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  width: 100% !important;
+  grid-template-columns: unset !important;
+}
+
+.zipline-spark__track::after,
+.zipline-spark__carousel--static .zipline-spark__track::after {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Question cards — full‑width rows with right‑arrow circles
+   ───────────────────────────────────────────────────────────── */
+.zipline-spark__card,
+.zipline-spark__carousel--static .zipline-spark__card {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: auto;
+  padding: 14px 0 14px 0;
+  border: none !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #12121e;
+  font-size: 0.97rem;
+  font-weight: 400;
+  line-height: 1.42;
+  text-align: left;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: pointer;
+  transition: background 0.12s ease, opacity 0.12s ease;
+}
+
+/* Remove top border on first card */
+.zipline-spark__track > .zipline-spark__card:first-child {
+  border-top: none !important;
+}
+
+.zipline-spark__card:hover {
+  background: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-color: transparent !important;
+}
+
+.zipline-spark__card:active {
+  opacity: 0.7;
+}
+
+/* Question text */
+.zipline-spark__card-text {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+}
+
+/* Arrow circle pseudo-element */
+.zipline-spark__card::after {
+  content: '\2192';        /* → */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #22223a;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  transition: background 0.12s, box-shadow 0.12s;
+}
+
+.zipline-spark__card:hover::after {
+  background: #f0f4ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.13);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Input bar  (injected by patch.js, sits below question list)
+   ───────────────────────────────────────────────────────────── */
+.zs-dd-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 13px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.zs-dd-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 15px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 0.86rem;
+  color: #666;
+  outline: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.zs-dd-input:focus {
+  border-color: rgba(89, 130, 246, 0.55);
+  color: #12121e;
+}
+
+.zs-dd-input::placeholder {
+  color: #aaa;
+}
+
+.zs-dd-submit {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.14s, transform 0.1s;
+}
+
+.zs-dd-submit:hover {
+  background: #1a4fd8;
+}
+
+.zs-dd-submit:active {
+  transform: scale(0.93);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Loading state (before questions arrive)
+   ───────────────────────────────────────────────────────────── */
+.zipline-spark__loading {
+  padding: 10px 0 4px;
+  font-size: 0.83rem;
+  color: #8888aa;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .zipline-spark {
+    padding: 16px 14px 14px;
+    border-radius: 14px;
+  }
+
+  .zs-dd-summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .zs-dd-full-link {
+    align-self: flex-end;
+  }
+}
