@@ -1,0 +1,202 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.panel { max-width: 380px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
+.tab-bar { display: flex; border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+.tab { flex: 1; padding: 10px 0; font-size: 13px; font-weight: 500; text-align: center; cursor: pointer; color: var(--color-text-secondary); border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: center; gap: 5px; user-select: none; }
+.tab.active { color: var(--color-text-info); border-bottom: 2px solid #1a73e8; }
+.tab:hover:not(.active) { color: var(--color-text-primary); background: var(--color-background-primary); }
+.panel-header { padding: 12px 14px 0; font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.results-pane { display: none; }
+.results-pane.active { display: block; }
+.web-result { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); transition: background 0.1s; cursor: pointer; }
+.web-result:last-child { border-bottom: none; }
+.web-result:hover { background: var(--color-background-secondary); }
+.favicon { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.result-text { flex: 1; min-width: 0; }
+.result-domain { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.result-title { font-size: 14px; color: #1a73e8; margin-bottom: 3px; line-height: 1.3; font-weight: 500; }
+.result-snippet { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.show-more { display: block; width: 100%; padding: 11px; font-size: 13px; font-weight: 500; color: #1a73e8; background: none; border: none; border-top: 0.5px solid var(--color-border-tertiary); cursor: pointer; text-align: center; letter-spacing: 0.01em; }
+.show-more:hover { background: var(--color-background-secondary); }
+.img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 10px; }
+.img-cell { aspect-ratio: 1; border-radius: 6px; overflow: hidden; cursor: pointer; position: relative; }
+.img-cell:hover .img-overlay { opacity: 1; }
+.img-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 10px; color: var(--color-text-secondary); }
+.img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: flex-end; padding: 6px; opacity: 0; transition: opacity 0.15s; }
+.img-label { font-size: 10px; color: #fff; line-height: 1.2; }
+.map-container { padding: 10px 14px; }
+.map-frame { width: 100%; height: 170px; border-radius: 8px; overflow: hidden; position: relative; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); }
+.map-grid { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(6,1fr); }
+.map-tile { border: 0.5px solid var(--color-border-tertiary); }
+.map-tile.road-h { background: #e8e4da; border: none; grid-row: 3; }
+.map-tile.road-v { background: #e8e4da; border: none; grid-column: 4; }
+.map-tile.park { background: #c8e6c0; border: none; }
+.map-tile.water { background: #b3d9f0; border: none; }
+.map-pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); }
+.map-pin i { font-size: 22px; color: #e53935; }
+.map-listing { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.map-listing:last-child { border-bottom: none; }
+.map-thumb { width: 44px; height: 44px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.map-info { flex: 1; min-width: 0; }
+.map-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.map-meta { font-size: 12px; color: var(--color-text-secondary); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.stars { color: #f9a825; font-size: 11px; letter-spacing: -1px; }
+.badge { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--color-background-success); color: var(--color-text-success); font-weight: 500; }
+.badge.closed { background: var(--color-background-danger); color: var(--color-text-danger); }
+@media (max-width: 480px) { .panel { max-width: 100%; border-left: none; border-right: none; border-radius: 0; } }
+</style>
+
+<h2 class="sr-only">Search results with web, images, and maps tabs</h2>
+
+<div class="panel">
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('web',this)">
+      <i class="ti ti-world" aria-hidden="true" style="font-size:14px"></i> Web
+    </div>
+    <div class="tab" onclick="switchTab('images',this)">
+      <i class="ti ti-photo" aria-hidden="true" style="font-size:14px"></i> Images
+    </div>
+    <div class="tab" onclick="switchTab('maps',this)">
+      <i class="ti ti-map-pin" aria-hidden="true" style="font-size:14px"></i> Maps
+    </div>
+  </div>
+
+  <div id="pane-web" class="results-pane active">
+    <div class="panel-header">Search Results</div>
+    <div class="web-result">
+      <div class="favicon" style="background:#e8f5e9;color:#2e7d32">S</div>
+      <div class="result-text">
+        <div class="result-domain">saveonsneaks.com</div>
+        <div class="result-title">Ultimate Guide: Choosing Lacrosse Sneakers</div>
+        <div class="result-snippet">Discover how to choose the perfect sneakers for lacrosse with our comprehensive guide. Get tips on fit, support, and performance.</div>
+      </div>
+    </div>
+    <div class="web-result">
+      <div class="favicon" style="background:#fff3e0;color:#e65100">SE</div>
+      <div class="result-text">
+        <div class="result-domain">shoeseverywear.com</div>
+        <div class="result-title">Best Lacrosse Shoes — Top Picks &amp; Guide</div>
+        <div class="result-snippet">Lacing Up Success: Your Ultimate Lacrosse Shoe Buying Guide. Choosing the right lacrosse shoe means balancing grip, ankle support, and turf compatibility.</div>
+      </div>
+    </div>
+    <div class="web-result">
+      <div class="favicon" style="background:#e3f2fd;color:#1565c0">W</div>
+      <div class="result-text">
+        <div class="result-domain">wisepickers.com</div>
+        <div class="result-title">Best Shoes for Lacrosse: Ultimate Buying Guide and Reviews</div>
+        <div class="result-snippet">Discover the best shoes for lacrosse that combine comfort, support, and performance to keep you agile on the field all season long.</div>
+      </div>
+    </div>
+    <div class="web-result">
+      <div class="favicon" style="background:#fce4ec;color:#880e4f">B</div>
+      <div class="result-text">
+        <div class="result-domain">bestforshoes.com</div>
+        <div class="result-title">Top 5 Lacrosse Shoes: Your Ultimate Buying Guide</div>
+        <div class="result-snippet">Choosing the right lacrosse shoe can feel like a puzzle. So many brands, so many styles — we break it all down for you.</div>
+      </div>
+    </div>
+    <button class="show-more">Show Google Results</button>
+  </div>
+
+  <div id="pane-images" class="results-pane">
+    <div class="panel-header" style="padding-bottom:6px">Image Results</div>
+    <div class="img-grid">
+      <div class="img-cell" style="background:#e8f5e9">
+        <div class="img-placeholder"><i class="ti ti-shoe" style="font-size:28px;color:#66bb6a" aria-hidden="true"></i><span>Nike Vapor</span></div>
+        <div class="img-overlay"><span class="img-label">Nike Vapor Edge — saveonsneaks.com</span></div>
+      </div>
+      <div class="img-cell" style="background:#e3f2fd">
+        <div class="img-placeholder"><i class="ti ti-shoe" style="font-size:28px;color:#42a5f5" aria-hidden="true"></i><span>Under Armour</span></div>
+        <div class="img-overlay"><span class="img-label">UA Highlight — wisepickers.com</span></div>
+      </div>
+      <div class="img-cell" style="background:#fff3e0">
+        <div class="img-placeholder"><i class="ti ti-shoe" style="font-size:28px;color:#ffa726" aria-hidden="true"></i><span>New Balance</span></div>
+        <div class="img-overlay"><span class="img-label">NB Freeze v3 — bestforshoes.com</span></div>
+      </div>
+      <div class="img-cell" style="background:#fce4ec">
+        <div class="img-placeholder"><i class="ti ti-shoe" style="font-size:28px;color:#ef5350" aria-hidden="true"></i><span>Adidas Adizero</span></div>
+        <div class="img-overlay"><span class="img-label">Adidas Adizero — shoeseverywear.com</span></div>
+      </div>
+      <div class="img-cell" style="background:#ede7f6">
+        <div class="img-placeholder"><i class="ti ti-shoe" style="font-size:28px;color:#7e57c2" aria-hidden="true"></i><span>Warrior Burn</span></div>
+        <div class="img-overlay"><span class="img-label">Warrior Burn Speed — lacrossegear.com</span></div>
+      </div>
+      <div class="img-cell" style="background:#e0f7fa">
+        <div class="img-placeholder"><i class="ti ti-shoe" style="font-size:28px;color:#26c6da" aria-hidden="true"></i><span>Brine King</span></div>
+        <div class="img-overlay"><span class="img-label">Brine King 5 — lacrossereview.com</span></div>
+      </div>
+    </div>
+    <button class="show-more">Show Google Images</button>
+  </div>
+
+  <div id="pane-maps" class="results-pane">
+    <div class="map-container">
+      <div class="map-frame">
+        <div style="width:100%;height:100%;background:#f0ebe0;position:relative;">
+          <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(6,1fr)">
+            <div style="background:#d4edbc;grid-column:1/4;grid-row:1/3"></div>
+            <div style="background:#c5e5f5;grid-column:6/9;grid-row:4/7"></div>
+            <div style="background:#e0dbc8;grid-column:1/9;grid-row:3;height:100%"></div>
+            <div style="background:#e0dbc8;grid-column:4;grid-row:1/7;width:100%"></div>
+          </div>
+          <div style="position:absolute;top:50%;left:45%;transform:translate(-50%,-100%)">
+            <i class="ti ti-map-pin" style="font-size:26px;color:#e53935" aria-hidden="true"></i>
+          </div>
+          <div style="position:absolute;top:55%;left:68%;transform:translate(-50%,-100%)">
+            <i class="ti ti-map-pin" style="font-size:22px;color:#e53935;opacity:0.7" aria-hidden="true"></i>
+          </div>
+          <div style="position:absolute;top:30%;left:60%;transform:translate(-50%,-100%)">
+            <i class="ti ti-map-pin" style="font-size:22px;color:#e53935;opacity:0.7" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="map-listing">
+          <div class="map-thumb" style="background:#e8f5e9">👟</div>
+          <div class="map-info">
+            <div class="map-name">Fleet Feet Sports</div>
+            <div class="map-meta">
+              <span class="stars">★★★★★</span><span>4.8 · 214 reviews</span>
+              <span class="badge">Open</span>
+            </div>
+            <div class="map-meta" style="margin-top:2px">0.4 mi · Sports goods store</div>
+          </div>
+        </div>
+        <div class="map-listing">
+          <div class="map-thumb" style="background:#e3f2fd">🏃</div>
+          <div class="map-info">
+            <div class="map-name">Dick's Sporting Goods</div>
+            <div class="map-meta">
+              <span class="stars">★★★★</span><span>4.2 · 892 reviews</span>
+              <span class="badge">Open</span>
+            </div>
+            <div class="map-meta" style="margin-top:2px">1.1 mi · Sporting goods chain</div>
+          </div>
+        </div>
+        <div class="map-listing">
+          <div class="map-thumb" style="background:#fce4ec">🥍</div>
+          <div class="map-info">
+            <div class="map-name">Lacrosse Unlimited</div>
+            <div class="map-meta">
+              <span class="stars">★★★★★</span><span>4.9 · 67 reviews</span>
+              <span class="badge closed">Closed</span>
+            </div>
+            <div class="map-meta" style="margin-top:2px">2.3 mi · Lacrosse specialty shop</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="show-more">Open in Google Maps</button>
+  </div>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.results-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pane-' + id).classList.add('active');
+}
+</script>
