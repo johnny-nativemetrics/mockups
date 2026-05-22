@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Results Widget — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #fff;
+    --bg2: #f8f9fa;
+    --bg3: #f1f3f4;
+    --text: #202124;
+    --text2: #5f6368;
+    --text3: #70757a;
+    --border: #dadce0;
+    --blue: #1a73e8;
+    --blue-hover: #1558b0;
+    --green: #188038;
+    --red: #d93025;
+    --tab-active: #1a73e8;
+    --radius: 8px;
+    --font-ui: 'Google Sans', 'Roboto', sans-serif;
+    --font-body: 'Roboto', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #202124;
+      --bg2: #292a2d;
+      --bg3: #35363a;
+      --text: #e8eaed;
+      --text2: #9aa0a6;
+      --text3: #9aa0a6;
+      --border: #3c4043;
+      --blue: #8ab4f8;
+      --blue-hover: #aecbfa;
+      --tab-active: #8ab4f8;
+    }
+  }
+
+  html, body {
+    background: var(--bg3);
+    min-height: 100vh;
+    font-family: var(--font-body);
+    color: var(--text);
+  }
+
+  /* ── Demo page chrome ─────────────────────────── */
+  .demo-page {
+    display: flex;
+    min-height: 100vh;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px 64px;
+    gap: 28px;
+  }
+
+  .demo-main {
+    flex: 1;
+    max-width: 620px;
+    min-width: 0;
+  }
+
+  .ai-summary {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .ai-summary-label {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 10px;
+  }
+
+  .ai-summary-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .ai-summary-text p + p { margin-top: 10px; }
+
+  .ai-summary-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    width: 100%;
+  }
+
+  .ai-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(135deg, #4285f4, #34a853);
+  }
+
+  /* ── Search widget ────────────────────────────── */
+  .widget {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    width: 100%;
+    max-width: 380px;
+    flex-shrink: 0;
+  }
+
+  /* On mobile: widget goes below the main column */
+  @media (max-width: 720px) {
+    .demo-page {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 12px 0 48px;
+      gap: 12px;
+    }
+    .demo-main { max-width: 100%; padding: 0 12px; }
+    .widget { max-width: 100%; border-radius: 0; border-left: none; border-right: none; }
+    .ai-summary { border-radius: var(--radius); }
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    padding: 0 4px;
+  }
+
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 14px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.12s;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .tab svg { opacity: 0.7; }
+
+  .tab.active {
+    color: var(--tab-active);
+    border-bottom-color: var(--tab-active);
+  }
+
+  .tab.active svg { opacity: 1; }
+  .tab:hover:not(.active) { color: var(--text); background: var(--bg2); }
+
+  /* Panes */
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* ── WEB pane ─────────────────────────────────── */
+  .pane-header {
+    padding: 12px 16px 6px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    color: var(--text);
+  }
+
+  .web-result {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .web-result:last-of-type { border-bottom: none; }
+  .web-result:hover { background: var(--bg2); }
+
+  .favicon {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; font-family: var(--font-ui);
+  }
+
+  .result-body { flex: 1; min-width: 0; }
+
+  .result-domain {
+    font-size: 12px;
+    color: var(--text3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 1px;
+  }
+
+  .result-title {
+    font-size: 14px;
+    font-family: var(--font-ui);
+    color: var(--blue);
+    margin-bottom: 3px;
+    line-height: 1.35;
+  }
+
+  .result-title:hover { color: var(--blue-hover); text-decoration: underline; }
+
+  .result-snippet {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── IMAGES pane ──────────────────────────────── */
+  .img-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    padding: 10px;
+  }
+
+  .img-cell {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+    font-family: var(--font-ui);
+    color: var(--text2);
+    transition: opacity 0.1s;
+  }
+
+  .img-cell:hover .img-overlay { opacity: 1; }
+  .img-cell svg { opacity: 0.5; }
+
+  .img-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: flex-end;
+    padding: 6px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .img-label {
+    font-size: 10px;
+    color: #fff;
+    line-height: 1.3;
+    font-family: var(--font-ui);
+  }
+
+  /* ── MAPS pane ────────────────────────────────── */
+  .map-wrap { padding: 10px 14px; }
+
+  .map-frame {
+    width: 100%;
+    height: 160px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    background: #e8e0d0;
+    margin-bottom: 10px;
+  }
+
+  .map-bg {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+  }
+
+  .map-road-h {
+    background: #d4c9b0;
+    grid-column: 1/-1;
+    grid-row: 4;
+    height: 100%;
+  }
+
+  .map-road-v {
+    background: #d4c9b0;
+    grid-column: 5;
+    grid-row: 1/-1;
+    width: 100%;
+  }
+
+  .map-park { background: #c5ddb5; grid-column: 1/4; grid-row: 1/4; }
+  .map-water { background: #aacde8; grid-column: 7/-1; grid-row: 5/-1; }
+
+  .map-pins { position: absolute; inset: 0; pointer-events: none; }
+
+  .map-pin {
+    position: absolute;
+    transform: translate(-50%, -100%);
+  }
+
+  .pin-icon {
+    display: block;
+    width: 22px; height: 22px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .pin-primary .pin-icon { background: #d93025; width: 26px; height: 26px; }
+  .pin-secondary .pin-icon { background: #e53935; opacity: 0.7; }
+
+  .map-listing {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .map-listing:last-child { border-bottom: none; }
+  .map-listing:hover { opacity: 0.8; }
+
+  .map-thumb {
+    width: 44px; height: 44px;
+    border-radius: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .map-name {
+    font-size: 14px; font-weight: 500;
+    font-family: var(--font-ui);
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .map-meta {
+    font-size: 12px;
+    color: var(--text3);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .stars { color: #f9a825; letter-spacing: -0.5px; font-size: 11px; }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .badge-open { background: #e6f4ea; color: #188038; }
+  .badge-closed { background: #fce8e6; color: #d93025; }
+
+  @media (prefers-color-scheme: dark) {
+    .badge-open { background: #1e3a27; color: #5bb974; }
+    .badge-closed { background: #3b1a19; color: #f28b82; }
+  }
+
+  /* ── Show more button ─────────────────────────── */
+  .show-more {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    color: var(--blue);
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.1s;
+  }
+
+  .show-more:hover { background: var(--bg2); }
+
+  /* ── Scrollbar ────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="demo-page">
+
+  <!-- Simulated AI summary / main content -->
+  <div class="demo-main">
+    <div class="ai-summary">
+      <div class="ai-summary-label">AI Summary</div>
+      <div class="ai-summary-text">
+        <p>Lacrosse shoes are designed for the specific demands of the sport — lateral agility on natural grass and turf, ankle support during quick direction changes, and cleat configurations that provide grip without restricting speed.</p>
+        <p>Top options in 2024 include the Nike Vapor Edge, Under Armour Highlight, and New Balance Freeze v3. When choosing, prioritize fit, cleat type (molded vs. detachable), and whether the shoe is rated for both field and turf surfaces.</p>
+      </div>
+      <div class="ai-summary-badge">
+        <span class="ai-dot"></span>
+        Generated by AI · Verify important information
+      </div>
+    </div>
+  </div>
+
+  <!-- Search results widget -->
+  <div class="widget">
+
+    <div class="tab-bar" role="tablist">
+      <div class="tab active" role="tab" aria-selected="true" onclick="switchTab('web',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Web
+      </div>
+      <div class="tab" role="tab" aria-selected="false" onclick="switchTab('images',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Images
+      </div>
+      <div class="tab" role="tab" aria-selected="false" onclick="switchTab('maps',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Maps
+      </div>
+    </div>
+
+    <!-- WEB -->
+    <div id="pane-web" class="pane active" role="tabpanel">
+      <div class="pane-header">Search Results</div>
+
+      <a class="web-result" href="#" onclick="return false;">
+        <div class="favicon" style="background:#e6f4ea;color:#137333">S</div>
+        <div class="result-body">
+          <div class="result-domain">saveonsneaks.com</div>
+          <div class="result-title">Ultimate Guide: Choosing Lacrosse Sneakers</div>
+          <div class="result-snippet">Discover how to choose the perfect sneakers for lacrosse with our comprehensive guide. Get tips on fit, support, and performance.</div>
+        </div>
+      </a>
+
+      <a class="web-result" href="#" onclick="return false;">
+        <div class="favicon" style="background:#fff3e0;color:#e65100">SE</div>
+        <div class="result-body">
+          <div class="result-domain">shoeseverywear.com</div>
+          <div class="result-title">Best Lacrosse Shoes — Top Picks &amp; Guide — Shoes Every Wear</div>
+          <div class="result-snippet">Lacing Up Success: Your Ultimate Lacrosse Shoe Buying Guide. Choosing the right lacrosse shoe means balancing grip, ankle support, and turf compatibility.</div>
+        </div>
+      </a>
+
+      <a class="web-result" href="#" onclick="return false;">
+        <div class="favicon" style="background:#e8f0fe;color:#1a73e8">W</div>
+        <div class="result-body">
+          <div class="result-domain">wisepickers.com</div>
+          <div class="result-title">Best Shoes for Lacrosse: Ultimate Buying Guide and Reviews</div>
+          <div class="result-snippet">Discover the best shoes for lacrosse that combine comfort, support, and performance to keep you agile on the field all season long.</div>
+        </div>
+      </a>
+
+      <a class="web-result" href="#" onclick="return false;">
+        <div class="favicon" style="background:#fce4ec;color:#880e4f">B</div>
+        <div class="result-body">
+          <div class="result-domain">bestforshoes.com</div>
+          <div class="result-title">Top 5 Lacrosse Shoes: Your Ultimate Buying Guide</div>
+          <div class="result-snippet">Choosing the right lacrosse shoe can feel like a puzzle. So many brands, so many styles — we break it all down for you.</div>
+        </div>
+      </a>
+
+      <button class="show-more">Show Google Results</button>
+    </div>
+
+    <!-- IMAGES -->
+    <div id="pane-images" class="pane" role="tabpanel">
+      <div class="pane-header">Image Results</div>
+      <div class="img-grid">
+        <div class="img-cell" style="background:#e8f5e9;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#66bb6a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l4-8 4 4 4-6 4 10"/><circle cx="18" cy="18" r="3"/></svg>
+          <span>Nike Vapor</span>
+          <div class="img-overlay"><span class="img-label">Nike Vapor Edge · saveonsneaks.com</span></div>
+        </div>
+        <div class="img-cell" style="background:#e3f2fd;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#42a5f5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l4-8 4 4 4-6 4 10"/><circle cx="18" cy="18" r="3"/></svg>
+          <span>Under Armour</span>
+          <div class="img-overlay"><span class="img-label">UA Highlight · wisepickers.com</span></div>
+        </div>
+        <div class="img-cell" style="background:#fff3e0;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffa726" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l4-8 4 4 4-6 4 10"/><circle cx="18" cy="18" r="3"/></svg>
+          <span>New Balance</span>
+          <div class="img-overlay"><span class="img-label">NB Freeze v3 · bestforshoes.com</span></div>
+        </div>
+        <div class="img-cell" style="background:#fce4ec;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef5350" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l4-8 4 4 4-6 4 10"/><circle cx="18" cy="18" r="3"/></svg>
+          <span>Adidas</span>
+          <div class="img-overlay"><span class="img-label">Adidas Adizero · shoeseverywear.com</span></div>
+        </div>
+        <div class="img-cell" style="background:#ede7f6;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7e57c2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l4-8 4 4 4-6 4 10"/><circle cx="18" cy="18" r="3"/></svg>
+          <span>Warrior</span>
+          <div class="img-overlay"><span class="img-label">Warrior Burn Speed · lacrossegear.com</span></div>
+        </div>
+        <div class="img-cell" style="background:#e0f7fa;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#26c6da" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l4-8 4 4 4-6 4 10"/><circle cx="18" cy="18" r="3"/></svg>
+          <span>Brine King</span>
+          <div class="img-overlay"><span class="img-label">Brine King 5 · lacrossereview.com</span></div>
+        </div>
+      </div>
+      <button class="show-more">Show Google Images</button>
+    </div>
+
+    <!-- MAPS -->
+    <div id="pane-maps" class="pane" role="tabpanel">
+      <div class="map-wrap">
+
+        <div class="map-frame">
+          <div class="map-bg">
+            <div class="map-park"></div>
+            <div class="map-water"></div>
+            <div class="map-road-h"></div>
+            <div class="map-road-v"></div>
+          </div>
+          <div class="map-pins">
+            <div class="map-pin pin-primary" style="top:44%;left:47%">
+              <span class="pin-icon"></span>
+            </div>
+            <div class="map-pin pin-secondary" style="top:62%;left:68%">
+              <span class="pin-icon"></span>
+            </div>
+            <div class="map-pin pin-secondary" style="top:30%;left:62%">
+              <span class="pin-icon"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-listing">
+          <div class="map-thumb">👟</div>
+          <div>
+            <div class="map-name">Fleet Feet Sports</div>
+            <div class="map-meta">
+              <span class="stars">★★★★★</span>
+              <span>4.8 · 214 reviews</span>
+              <span class="badge badge-open">Open</span>
+            </div>
+            <div class="map-meta">0.4 mi · Sports goods store</div>
+          </div>
+        </div>
+
+        <div class="map-listing">
+          <div class="map-thumb">🏃</div>
+          <div>
+            <div class="map-name">Dick's Sporting Goods</div>
+            <div class="map-meta">
+              <span class="stars">★★★★</span>
+              <span>4.2 · 892 reviews</span>
+              <span class="badge badge-open">Open</span>
+            </div>
+            <div class="map-meta">1.1 mi · Sporting goods chain</div>
+          </div>
+        </div>
+
+        <div class="map-listing">
+          <div class="map-thumb">🥍</div>
+          <div>
+            <div class="map-name">Lacrosse Unlimited</div>
+            <div class="map-meta">
+              <span class="stars">★★★★★</span>
+              <span>4.9 · 67 reviews</span>
+              <span class="badge badge-closed">Closed</span>
+            </div>
+            <div class="map-meta">2.3 mi · Lacrosse specialty shop</div>
+          </div>
+        </div>
+
+      </div>
+      <button class="show-more">Open in Google Maps</button>
+    </div>
+
+  </div><!-- /widget -->
+</div><!-- /demo-page -->
+
+<script>
+  function switchTab(id, el) {
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    el.setAttribute('aria-selected', 'true');
+    document.getElementById('pane-' + id).classList.add('active');
+  }
+</script>
+
+</body>
+</html>
