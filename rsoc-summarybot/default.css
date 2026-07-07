@@ -1010,11 +1010,18 @@
     }
 }
 
-/* Green CTA color test for the animated center pill */
-.nativemetrics-summarybot-center-pill {
+/* Green CTA — full override, replace any earlier version of this block entirely */
+.nativemetrics-summarybot-center-pill,
+.nativemetrics-summarybot-center-pill:hover,
+.nativemetrics-summarybot-center-pill:active,
+.nativemetrics-summarybot-center-pill:focus,
+.nativemetrics-summarybot-center-pill:focus-visible {
     --nm-launcher-primary: #2e7d32 !important;
     --nm-launcher-secondary: #43a047 !important;
     --nm-launcher-text: #ffffff !important;
+}
+
+.nativemetrics-summarybot-center-pill {
     box-shadow: 0 10px 28px rgba(46, 125, 50, 0.38) !important;
 }
 
@@ -1022,8 +1029,14 @@
     box-shadow: 0 16px 36px rgba(46, 125, 50, 0.46) !important;
 }
 
+.nativemetrics-summarybot-center-pill:active {
+    box-shadow: 0 10px 28px rgba(46, 125, 50, 0.38) !important;
+}
+
+.nativemetrics-summarybot-center-pill:focus,
 .nativemetrics-summarybot-center-pill:focus-visible {
     outline: 3px solid rgba(46, 125, 50, 0.45) !important;
+    box-shadow: 0 16px 36px rgba(46, 125, 50, 0.46) !important;
 }
 
 @keyframes nmSummaryCenterPillGlow {
