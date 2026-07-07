@@ -1010,7 +1010,8 @@
     }
 }
 
-/* Green CTA — full override, replace any earlier version of this block entirely */
+/* Green CTA override — full block, theme-agnostic (protects against theme button:hover/focus rules) */
+
 .nativemetrics-summarybot-center-pill,
 .nativemetrics-summarybot-center-pill:hover,
 .nativemetrics-summarybot-center-pill:active,
@@ -1019,6 +1020,8 @@
     --nm-launcher-primary: #2e7d32 !important;
     --nm-launcher-secondary: #43a047 !important;
     --nm-launcher-text: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.85) !important;
+    background-color: transparent !important;
 }
 
 .nativemetrics-summarybot-center-pill {
@@ -1035,7 +1038,7 @@
 
 .nativemetrics-summarybot-center-pill:focus,
 .nativemetrics-summarybot-center-pill:focus-visible {
-    outline: 3px solid rgba(46, 125, 50, 0.45) !important;
+    outline-color: rgba(46, 125, 50, 0.45) !important;
     box-shadow: 0 16px 36px rgba(46, 125, 50, 0.46) !important;
 }
 
