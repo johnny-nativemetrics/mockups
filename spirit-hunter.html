@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spirit Hunter panel mockup</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #eef0f7;
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+  }
+  .panel {
+    width: 380px;
+    height: 100vh;
+    background: #F7F8FC;
+    border-left: 1px solid #d9d5ff;
+    border-right: 1px solid #d9d5ff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: #17233D;
+  }
+  header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border-bottom: 1px solid #e8e9f2;
+  }
+  header .icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: #7657FF;
+    flex: none;
+  }
+  header strong {
+    font-size: 14px;
+    flex: 1;
+  }
+  header .gear {
+    font-size: 18px;
+    color: #596177;
+  }
+  .scrollarea {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    position: relative;
+  }
+  .ad {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+    border-bottom: 1px solid #e8e9f2;
+    padding: 8px 14px 12px;
+  }
+  .ad-label {
+    font-size: 10px;
+    letter-spacing: .04em;
+    color: #9095a5;
+    margin-bottom: 4px;
+  }
+  .ad-card {
+    background: #F7F8FC;
+    border: 1px solid #e8e9f2;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .ad-thumb {
+    width: 100%;
+    height: 150px;
+    background: #CECBF6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+  .ad-copy {
+    padding: 10px 12px;
+  }
+  .ad-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .ad-sub {
+    font-size: 11px;
+    color: #667085;
+    margin-top: 2px;
+  }
+  .summary {
+    padding: 14px;
+  }
+  .summary h1 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px;
+  }
+  .summary .meta {
+    font-size: 13px;
+    color: #667085;
+    margin-bottom: 10px;
+  }
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .tag {
+    font-size: 11px;
+    background: #E1F5EE;
+    color: #085041;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .summary p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .thread {
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .row {
+    display: flex;
+  }
+  .row.user {
+    justify-content: flex-end;
+  }
+  .row.bot {
+    justify-content: flex-start;
+  }
+  .bubble {
+    max-width: 82%;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 8px 11px;
+    border-radius: 12px;
+  }
+  .row.user .bubble {
+    background: #7657FF;
+    color: #fff;
+  }
+  .row.bot .bubble {
+    background: #fff;
+    border: 1px solid #e8e9f2;
+  }
+  footer {
+    flex: none;
+    border-top: 1px solid #e8e9f2;
+    background: #fff;
+    padding: 22px 14px 12px;
+  }
+  .pills {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .pill {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5546d7;
+    background: #f7f5ff;
+    border: 1px solid #d9d5ff;
+    border-radius: 999px;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .composer {
+    display: flex;
+    gap: 8px;
+  }
+  .composer input {
+    flex: 1;
+    height: 34px;
+    font-size: 13px;
+    border: 1px solid #d9d5ff;
+    border-radius: 9px;
+    padding: 0 10px;
+    font-family: inherit;
+  }
+  .composer button {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    background: #7657FF;
+    border: none;
+    border-radius: 9px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .caption {
+    text-align: center;
+    font-size: 12px;
+    color: #667085;
+    margin-top: 14px;
+    max-width: 380px;
+  }
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <header>
+    <div class="icon"></div>
+    <strong>Spirit Hunter</strong>
+    <span class="gear">&#9881;</span>
+  </header>
+
+  <div class="scrollarea" id="scrollarea">
+    <div class="ad">
+      <div class="ad-label">Advertisement</div>
+      <div class="ad-card">
+        <div class="ad-thumb">&#127863;</div>
+        <div class="ad-copy">
+          <div class="ad-title">ReserveBar</div>
+          <div class="ad-sub">Shop rare and allocated bourbon</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <h1>Buffalo Trace Kentucky Straight Bourbon, 750ml</h1>
+      <div class="meta">Total Wine and More &middot; $27.99</div>
+      <div class="tags">
+        <span class="tag">45% ABV</span>
+        <span class="tag">Kentucky</span>
+        <span class="tag">Wheated</span>
+      </div>
+      <p>A classic, easy-drinking bourbon with notes of vanilla, brown sugar, and light oak. Good value for the price point, and a common bartender pick for cocktails as well as sipping neat.</p>
+    </div>
+
+    <div class="thread" id="thread"></div>
+  </div>
+
+  <footer>
+    <div class="pills">
+      <button type="button" class="pill" onclick="askPill('reviews')">&#128172; What people really think</button>
+      <button type="button" class="pill" onclick="askPill('price')">&#128176; Best price online</button>
+      <button type="button" class="pill" onclick="askPill('alternatives')">&#128260; Recommended alternatives</button>
+    </div>
+    <div class="composer">
+      <input id="askinput" type="text" placeholder="Ask a follow-up question">
+      <button type="button" onclick="askInput()" aria-label="Send">&#8594;</button>
+    </div>
+  </footer>
+</div>
+<script>
+var productShortName = 'Buffalo Trace';
+
+function bubble(role, text) {
+  var thread = document.getElementById('thread');
+  var row = document.createElement('div');
+  row.className = 'row ' + role;
+  var b = document.createElement('div');
+  b.className = 'bubble';
+  b.textContent = text;
+  row.appendChild(b);
+  thread.appendChild(row);
+  var scrollarea = document.getElementById('scrollarea');
+  scrollarea.scrollTop = scrollarea.scrollHeight;
+}
+
+var pillResponses = {
+  reviews: {
+    userText: 'What people really think',
+    botText: 'r/bourbon and a few YouTube reviewers consistently call this a reliable everyday sipper for the price. The most common critique is that it is fairly mild next to other wheated bourbons, with several threads suggesting Weller if you want more sweetness.'
+  },
+  price: {
+    userText: 'Best price online',
+    botText: 'Total Wine has this at $27.99. Wine.com lists it around $25.49 and BevMo around $26.99, so Total Wine is close but not the lowest right now.'
+  },
+  alternatives: {
+    userText: 'Recommended alternatives',
+    botText: 'Similar wheated bourbons at nearby price points: Weller Special Reserve (~$24) and Larceny (~$26), both softer and sweeter than Buffalo Trace.'
+  }
+};
+
+function askPill(key) {
+  var entry = pillResponses[key];
+  if (!entry) return;
+  bubble('user', entry.userText);
+  setTimeout(function () {
+    bubble('bot', entry.botText);
+  }, 350);
+}
+
+function askInput() {
+  var input = document.getElementById('askinput');
+  var val = input.value.trim();
+  if (!val) return;
+  bubble('user', val);
+  input.value = '';
+  setTimeout(function () {
+    bubble('bot', 'Here is a synthesized answer to that question, pulled and summarized from a few sources.');
+  }, 350);
+}
+</script>
+</body>
+</html>
