@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SummarizeThis — brain nudge mockup</title>
+<style>
+  :root {
+    --brand-1: #0f9d58;
+    --brand-2: #16a34a;
+    --brand-3: #34d399;
+    --ink: #17233d;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+  }
+
+  /* site chrome */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    background: #fff;
+    border-bottom: 1px solid #e8e9f2;
+  }
+  .nav .logo { font-weight: 800; font-size: 18px; letter-spacing: -.01em; }
+  .nav .links { display: flex; gap: 22px; font-size: 13px; font-weight: 600; color: #596177; }
+
+  /* article */
+  .article { max-width: 720px; margin: 0 auto; padding: 40px 24px 120px; }
+  .kicker { font-size: 12px; font-weight: 800; letter-spacing: .06em; color: var(--brand-2); text-transform: uppercase; margin: 0 0 10px; }
+  h1.headline { font-size: 34px; line-height: 1.2; font-weight: 800; color: var(--ink); margin: 0 0 14px; letter-spacing: -.01em; }
+  .byline { font-size: 13px; color: #667085; margin: 0 0 26px; }
+  .hero { height: 320px; border-radius: 12px; margin-bottom: 10px; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); }
+  .hero-caption { font-size: 12px; color: #98a2b3; font-style: italic; margin: 0 0 28px; }
+  .article p { font-size: 16px; line-height: 1.75; color: #2c3548; margin: 0 0 20px; }
+  .pull-quote { border-left: 3px solid var(--brand-2); margin: 32px 0; padding: 4px 0 4px 20px; font-size: 20px; line-height: 1.5; font-weight: 600; color: var(--ink); }
+
+  /* launcher wrapper: houses the idle glow, ping rings, spark burst, and the button itself.
+     kept BELOW the bubble's z-index so the rings/burst never draw on top of a card. */
+  #launcher-wrap {
+    position: fixed;
+    bottom: 26px;
+    right: 26px;
+    width: 64px;
+    height: 64px;
+    z-index: 4;
+  }
+  .glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(52,211,153,.45) 0%, rgba(52,211,153,0) 70%);
+    animation: idle-breathe 3.6s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes idle-breathe {
+    0%, 100% { transform: scale(.85); opacity: .55; }
+    50% { transform: scale(1.05); opacity: 1; }
+  }
+  .ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--brand-3);
+    opacity: 0;
+    pointer-events: none;
+  }
+  #launcher-wrap.nudge .ring-a { animation: ring-pulse 1.4s cubic-bezier(.2,.7,.3,1) 1; }
+  #launcher-wrap.nudge .ring-b { animation: ring-pulse 1.4s cubic-bezier(.2,.7,.3,1) 1; animation-delay: .35s; }
+  @keyframes ring-pulse {
+    0% { transform: scale(.75); opacity: .75; }
+    100% { transform: scale(2.05); opacity: 0; }
+  }
+  .spark-burst { position: absolute; inset: 0; pointer-events: none; }
+  .spark-burst i {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 6px; height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: var(--brand-3);
+    opacity: 0;
+    transform: rotate(var(--ang)) translateY(0) scale(.4);
+  }
+  #launcher-wrap.nudge .spark-burst i {
+    animation: burst-fly .85s ease-out 1;
+    animation-delay: var(--d);
+  }
+  @keyframes burst-fly {
+    0% { opacity: 0; transform: rotate(var(--ang)) translateY(0) scale(.3); }
+    25% { opacity: 1; }
+    100% { opacity: 0; transform: rotate(var(--ang)) translateY(-38px) scale(1); }
+  }
+  #launcher {
+    position: absolute;
+    inset: 0;
+    width: 64px;
+    height: 64px;
+    border: 3px solid rgba(255,255,255,.95);
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--brand-1) 0%, var(--brand-2) 55%, var(--brand-3) 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 26px rgba(15, 90, 60, .35);
+    transition: transform .2s ease, box-shadow .2s ease;
+    overflow: hidden;
+  }
+  #launcher:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 14px 32px rgba(15, 90, 60, .45); }
+  #launcher svg { width: 48px; height: 48px; display: block; position: relative; }
+  #launcher-wrap.nudge #launcher { animation: st-bounce .9s cubic-bezier(.28,1.65,.55,1) 1; }
+  @keyframes st-bounce {
+    0% { transform: scale(1) rotate(0deg); }
+    22% { transform: scale(1.22) rotate(-6deg); }
+    44% { transform: scale(.92) rotate(4deg); }
+    66% { transform: scale(1.08) rotate(-2deg); }
+    85% { transform: scale(.98) rotate(1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  /* occasional angled shimmer sweeping across the icon */
+  #launcher::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: linear-gradient(100deg, rgba(255,255,255,0) 32%, rgba(255,255,255,.75) 48%, rgba(255,255,255,0) 64%);
+    transform: translateX(-140%) rotate(8deg);
+    animation: brain-shimmer 6.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes brain-shimmer {
+    0%, 58% { transform: translateX(-140%) rotate(8deg); }
+    76% { transform: translateX(140%) rotate(8deg); }
+    100% { transform: translateX(140%) rotate(8deg); }
+  }
+
+  /* thought bubble - sits to the left of the icon, same baseline, and grows out
+     from the icon's side rather than fading in place */
+  .bubble {
+    position: fixed;
+    bottom: 32px;
+    right: 106px;
+    max-width: 260px;
+    padding: 12px 14px 13px;
+    background: linear-gradient(180deg, #f4fbf7 0%, #e9f7ef 100%);
+    border: 1.5px solid #8fdbae;
+    border-radius: 16px;
+    box-shadow: 0 16px 34px rgba(15, 120, 80, .22), 0 3px 10px rgba(15, 120, 80, .12);
+    color: var(--ink);
+    opacity: 0;
+    transform: translateX(70px) scale(.2);
+    transform-origin: 100% 60%;
+    transition: opacity .25s ease, transform .25s ease, opacity .2s ease .1s;
+    pointer-events: none;
+    text-align: left;
+    cursor: pointer;
+    z-index: 10;
+  }
+  .bubble:hover { border-color: #6ecf95; box-shadow: 0 18px 38px rgba(15, 120, 80, .26), 0 3px 10px rgba(15, 120, 80, .14); }
+  .bubble.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: thought-emerge .7s cubic-bezier(.2,.85,.32,1) forwards;
+  }
+  #auto-bubbles.suppressed .bubble { opacity: 0 !important; pointer-events: none !important; transition: opacity .15s ease; animation: none; }
+  @keyframes thought-emerge {
+    0% { opacity: 0; transform: translateX(70px) scale(.15); }
+    50% { opacity: 1; transform: translateX(-8px) scale(1.07); }
+    75% { transform: translateX(3px) scale(.98); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  /* icon + text laid out as flex columns so wrapped lines all align under each other */
+  .bubble-inner { display: flex; align-items: flex-start; gap: 7px; }
+  .bubble-text { flex: 1; font-size: 13px; line-height: 1.42; font-weight: 700; }
+  .spark { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; color: var(--brand-1); }
+  .bubble.show .spark { animation: spark-twinkle 1.5s ease-in-out infinite .35s; }
+  @keyframes spark-twinkle {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(12deg); }
+  }
+  /* tail: reaches all the way across the gap and overlaps the brain icon,
+     built as two layered arrow shapes to fake a stroked outline on the taper */
+  .bubble::before {
+    content: "";
+    position: absolute;
+    top: 50%; right: -22px;
+    width: 25px; height: 20px;
+    transform: translateY(-50%);
+    background: #8fdbae;
+    clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+    z-index: 1;
+  }
+  .bubble::after {
+    content: "";
+    position: absolute;
+    top: 50%; right: -20px;
+    width: 23px; height: 17px;
+    transform: translateY(-50%);
+    background: #eef8f1;
+    clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+    z-index: 1;
+  }
+
+  /* hover flyout: full stacked list of every question plus a generic ask row */
+  #stack {
+    position: fixed;
+    bottom: 26px;
+    right: 106px;
+    width: 270px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  #stack.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .stack-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #c9ecd7;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px rgba(15, 120, 80, .1);
+    font-size: 12.5px;
+    line-height: 1.4;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .stack-row:hover { background: #f1fbf5; border-color: #9fdfb9; }
+  .stack-row .spark { width: 14px; height: 14px; margin-top: 1px; }
+  .stack-row .row-text { flex: 1; }
+  .stack-ask {
+    border-style: dashed;
+    border-color: #d6dae2;
+    color: #596177;
+    font-weight: 700;
+    background: #fbfbfd;
+  }
+  .stack-ask:hover { background: #f3f4f7; border-color: #b9c0cc; }
+  .stack-ask svg { color: #98a2b3; }
+
+  /* side panel */
+  #scrim {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, .18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    z-index: 9;
+  }
+  #scrim.open { opacity: 1; pointer-events: auto; }
+  #panel {
+    position: fixed; top: 0; right: 0;
+    width: 320px; height: 100%;
+    background: #fff;
+    border-left: 1px solid #e5e8f5;
+    box-shadow: -18px 0 40px rgba(23, 35, 61, .1);
+    transform: translateX(100%);
+    transition: transform .32s cubic-bezier(.16,.84,.44,1);
+    display: flex; flex-direction: column;
+    z-index: 11;
+  }
+  #panel.open { transform: translateX(0); }
+  .panel-header { min-height: 52px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e8e9f2; }
+  .panel-header .mark { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(145deg, var(--brand-1), var(--brand-3)); display: flex; align-items: center; justify-content: center; color: #fff; flex: 0 0 auto; }
+  .panel-header .mark svg { width: 15px; height: 15px; }
+  .panel-header span.title { font-weight: 700; font-size: 14px; color: var(--ink); flex: 1; }
+  .panel-header button { border: 0; background: transparent; color: #596177; font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; border-radius: 6px; }
+  .panel-header button:hover { background: #f0f1f7; }
+  .panel-body { padding: 14px; flex: 1; overflow: auto; }
+  .panel-body .eyebrow { font-size: 12px; color: #667085; margin: 0 0 6px; }
+  .panel-body .eyebrow strong { color: var(--ink); font-weight: 700; }
+  #answer { font-size: 13.5px; line-height: 1.6; color: #3a4256; background: #f4fbf7; border: 1px solid #dcf1e4; border-radius: 10px; padding: 12px; margin-bottom: 14px; }
+  .ad { text-align: center; margin-bottom: 14px; }
+  .ad p { font-size: 10px; letter-spacing: .06em; color: #98a2b3; margin: 0 0 6px; }
+  .ad-box { border: 1px solid #e5e8f5; border-radius: 10px; padding: 16px; font-size: 12px; color: #98a2b3; }
+  #chip { width: 100%; text-align: left; border: 1px solid #bfe6d0; border-radius: 999px; background: #f2faf5; color: #0f7a44; font-size: 12px; font-weight: 700; padding: 9px 13px; cursor: pointer; transition: background .15s ease; }
+  #chip:hover { background: #e6f7ec; }
+
+  .caption { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #98a2b3; background: #fff; padding: 5px 12px; border-radius: 999px; border: 1px solid #e8e9f2; z-index: 12; max-width: 460px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="caption">Auto-cycle: one card at a time, 5s each. Hover the icon to pause and see every question stacked, plus "ask something else."</div>
+
+<nav class="nav">
+  <span class="logo">The Gridiron Wire</span>
+  <span class="links"><span>Home</span><span>NFL</span><span>Scores</span><span>Standings</span><span>Fantasy</span></span>
+</nav>
+
+<article class="article">
+  <p class="kicker">NFL &middot; AFC West</p>
+  <h1 class="headline">Chiefs&rsquo; offense finds new rhythm as playoff picture tightens</h1>
+  <p class="byline">By Jordan Ellis &middot; Feb 3, 2026 &middot; 4 min read</p>
+  <div class="hero"></div>
+  <p class="hero-caption">Chiefs offensive linemen run drills at Wednesday&rsquo;s practice.</p>
+
+  <p>Kansas City&rsquo;s offense looked sharper than it has in weeks on Sunday, with new personnel groupings opening up the middle of the field and giving Patrick Mahomes more time in the pocket than he&rsquo;s had all season.</p>
+  <p>The shift comes as the Chiefs try to lock up a first-round bye, with three games left on the schedule and two divisional rivals close behind in the standings. Coaches say the changes were weeks in the making, not a reaction to one bad outing.</p>
+
+  <p class="pull-quote">&ldquo;It&rsquo;s not about one game. We&rsquo;ve been building toward this look since the bye week.&rdquo;</p>
+
+  <p>The new-look line debuted against a defense that had generated pressure on nearly forty percent of opposing dropbacks over its previous three games, a number that fell sharply once Kansas City shifted its protection scheme in the second quarter.</p>
+  <p>Mahomes, for his part, downplayed any single adjustment, crediting the offensive staff for identifying tendencies on film and pointing to a full week of practice reps as the real difference-maker heading into Sunday.</p>
+  <p>With the postseason picture still fluid across the conference, every remaining possession carries extra weight &mdash; and Kansas City&rsquo;s coaching staff appears determined to enter the playoffs with its identity, not just its record, settled.</p>
+</article>
+
+<div id="auto-bubbles">
+  <div class="bubble" data-i="0"><div class="bubble-inner"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="bubble-text">Why did the Chiefs suddenly change their offensive line rotation?</span></div></div>
+  <div class="bubble" data-i="1"><div class="bubble-inner"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="bubble-text">Is Mahomes actually playing better behind this new blocking scheme?</span></div></div>
+  <div class="bubble" data-i="2"><div class="bubble-inner"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="bubble-text">What does this mean for Kansas City&rsquo;s playoff seeding?</span></div></div>
+  <div class="bubble" data-i="3"><div class="bubble-inner"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="bubble-text">Could this be a preview of their postseason gameplan?</span></div></div>
+</div>
+
+<div id="stack">
+  <div class="stack-row stack-ask" id="stack-ask">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <span class="row-text">Ask something else</span>
+  </div>
+  <div class="stack-row" data-i="3"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="row-text">Could this be a preview of their postseason gameplan?</span></div>
+  <div class="stack-row" data-i="2"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="row-text">What does this mean for Kansas City&rsquo;s playoff seeding?</span></div>
+  <div class="stack-row" data-i="1"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="row-text">Is Mahomes actually playing better behind this new blocking scheme?</span></div>
+  <div class="stack-row" data-i="0"><svg class="spark" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.4 3.9L13.3 6l-3.9 1.4L8 11.3 6.6 7.4 2.7 6l3.9-1.4L8 1Z" fill="currentColor"/></svg><span class="row-text">Why did the Chiefs suddenly change their offensive line rotation?</span></div>
+</div>
+
+<div id="launcher-wrap">
+  <div class="glow"></div>
+  <div class="ring ring-a"></div>
+  <div class="ring ring-b"></div>
+  <div class="spark-burst">
+    <i style="--ang:0deg; --d:0ms;"></i>
+    <i style="--ang:60deg; --d:40ms;"></i>
+    <i style="--ang:120deg; --d:80ms;"></i>
+    <i style="--ang:180deg; --d:20ms;"></i>
+    <i style="--ang:240deg; --d:100ms;"></i>
+    <i style="--ang:300deg; --d:60ms;"></i>
+  </div>
+  <button id="launcher" aria-label="Open SummarizeThis, curious questions about this article">
+    <svg viewBox="2.5 1.2 19.5 21.6" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9.3 3.2C7.7 3.5 6.5 4.8 6.3 6.4 4.7 6.9 3.6 8.4 3.6 10.1c0 1 .3 1.9.9 2.6-.6.7-.9 1.6-.9 2.6 0 1.9 1.4 3.5 3.3 3.7.5 1.6 2 2.8 3.7 2.8h1.4c.5 0 .9-.4.9-.9V4.7c0-.9-.7-1.6-1.6-1.6-.7 0-1.4.1-2 .1Z" fill="#fff"/>
+      <path d="M14.7 3.2c1.6.3 2.8 1.6 3 3.2 1.6.5 2.7 2 2.7 3.7 0 1-.3 1.9-.9 2.6.6.7.9 1.6.9 2.6 0 1.9-1.4 3.5-3.3 3.7-.5 1.6-2 2.8-3.7 2.8h-1.4c-.5 0-.9-.4-.9-.9V4.7c0-.9.7-1.6 1.6-1.6.7 0 1.4.1 2 .1Z" fill="#fff" fill-opacity=".82"/>
+      <path d="M12 4.5v15.7" stroke="#0f7a44" stroke-opacity=".4" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M7.6 9.3c1 .3 2 .3 2.9-.2M7.3 13.6c1 .35 2.1.3 3-.25" stroke="#0f7a44" stroke-opacity=".35" stroke-width="1" stroke-linecap="round"/>
+      <path d="M16.4 9.3c-1 .3-2 .3-2.9-.2M16.7 13.6c-1 .35-2.1.3-3-.25" stroke="#0f7a44" stroke-opacity=".35" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<div id="scrim"></div>
+<div id="panel">
+  <div class="panel-header">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M9.3 3.2C7.7 3.5 6.5 4.8 6.3 6.4 4.7 6.9 3.6 8.4 3.6 10.1c0 1 .3 1.9.9 2.6-.6.7-.9 1.6-.9 2.6 0 1.9 1.4 3.5 3.3 3.7.5 1.6 2 2.8 3.7 2.8h1.4c.5 0 .9-.4.9-.9V4.7c0-.9-.7-1.6-1.6-1.6-.7 0-1.4.1-2 .1Z" fill="#fff"/><path d="M14.7 3.2c1.6.3 2.8 1.6 3 3.2 1.6.5 2.7 2 2.7 3.7 0 1-.3 1.9-.9 2.6.6.7.9 1.6.9 2.6 0 1.9-1.4 3.5-3.3 3.7-.5 1.6-2 2.8-3.7 2.8h-1.4c-.5 0-.9-.4-.9-.9V4.7c0-.9.7-1.6 1.6-1.6.7 0 1.4.1 2 .1Z" fill="#fff" fill-opacity=".82"/></svg></span>
+    <span class="title">SummarizeThis</span>
+    <button id="panel-close" aria-label="Close">&times;</button>
+  </div>
+  <div class="panel-body">
+    <p class="eyebrow" id="eyebrow"></p>
+    <div id="answer"></div>
+    <div class="ad">
+      <p>ADVERTISEMENT</p>
+      <div class="ad-box">Sponsored placement</div>
+    </div>
+    <button id="chip"></button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var questions = [
+    "Why did the Chiefs suddenly change their offensive line rotation?",
+    "Is Mahomes actually playing better behind this new blocking scheme?",
+    "What does this mean for Kansas City’s playoff seeding?",
+    "Could this be a preview of their postseason gameplan?"
+  ];
+  var answers = [
+    "Coaches shuffled the interior line to counter faster interior rushers after two shaky outings. The new left guard has quicker lateral footwork in pass protection.",
+    "Tracking data shows Mahomes had close to a full second more time to throw last week than his season average, and it showed up in more completions on deeper routes.",
+    "A win keeps Kansas City tied atop the conference with three games left, putting a first-round bye back within reach if they hold serve at home.",
+    "Assistants have hinted the new personnel groupings were built with playoff matchups in mind, not just this week’s opponent."
+  ];
+  var genericAnswer = "Kansas City debuted a reshuffled offensive line Sunday, giving Mahomes more time in the pocket as the Chiefs push for a first-round bye with three games left.";
+
+  var SHOW_MS = 5000;
+  var GAP_MS = 4000;
+  var LAP_PAUSE_MS = 10000;
+  var idx = 0;
+  var loopTimer = null;
+  var running = false;
+  var hovering = false;
+
+  var bubbles = Array.prototype.slice.call(document.querySelectorAll(".bubble"));
+  var autoBubbles = document.getElementById("auto-bubbles");
+  var wrap = document.getElementById("launcher-wrap");
+  var launcher = document.getElementById("launcher");
+  var stack = document.getElementById("stack");
+  var scrim = document.getElementById("scrim");
+  var panel = document.getElementById("panel");
+  var eyebrow = document.getElementById("eyebrow");
+  var answerEl = document.getElementById("answer");
+  var chip = document.getElementById("chip");
+
+  function playNudge() {
+    wrap.classList.remove("nudge");
+    void wrap.offsetWidth;
+    wrap.classList.add("nudge");
+    setTimeout(function () { wrap.classList.remove("nudge"); }, 1400);
+  }
+
+  function hideAll() {
+    bubbles.forEach(function (b) { b.classList.remove("show"); });
+  }
+
+  function showNext(gap) {
+    hideAll();
+    loopTimer = setTimeout(function () {
+      if (!running || hovering) return;
+      playNudge();
+      bubbles[idx].classList.add("show");
+      loopTimer = setTimeout(afterShow, SHOW_MS);
+    }, gap);
+  }
+
+  function afterShow() {
+    if (!running || hovering) return;
+    idx += 1;
+    if (idx >= questions.length) {
+      idx = 0;
+      hideAll();
+      loopTimer = setTimeout(function () {
+        if (running && !hovering) showNext(500);
+      }, LAP_PAUSE_MS);
+    } else {
+      showNext(GAP_MS);
+    }
+  }
+
+  function startCycle() {
+    if (running) return;
+    running = true;
+    idx = 0;
+    showNext(600);
+  }
+
+  function stopCycle() {
+    running = false;
+    clearTimeout(loopTimer);
+    hideAll();
+  }
+
+  var hoverLeaveTimer = null;
+  function onHoverEnter() {
+    clearTimeout(hoverLeaveTimer);
+    if (hovering) return;
+    hovering = true;
+    stopCycle();
+    autoBubbles.classList.add("suppressed");
+    stack.classList.add("open");
+  }
+  function onHoverLeave() {
+    clearTimeout(hoverLeaveTimer);
+    hoverLeaveTimer = setTimeout(function () {
+      hovering = false;
+      stack.classList.remove("open");
+      autoBubbles.classList.remove("suppressed");
+      startCycle();
+    }, 90);
+  }
+  wrap.addEventListener("mouseenter", onHoverEnter);
+  wrap.addEventListener("mouseleave", onHoverLeave);
+  stack.addEventListener("mouseenter", onHoverEnter);
+  stack.addEventListener("mouseleave", onHoverLeave);
+
+  function openPanel(mode, i) {
+    stopCycle();
+    hovering = false;
+    stack.classList.remove("open");
+    autoBubbles.classList.remove("suppressed");
+    if (mode === "qa") {
+      eyebrow.innerHTML = "Answering &mdash; <strong>" + questions[i] + "</strong>";
+      answerEl.textContent = answers[i];
+      var next = (i + 1) % questions.length;
+      chip.textContent = questions[next];
+      chip.dataset.next = String(next);
+    } else {
+      eyebrow.innerHTML = "<strong>Quick summary</strong>";
+      answerEl.textContent = genericAnswer;
+      chip.textContent = questions[0];
+      chip.dataset.next = "0";
+    }
+    panel.classList.add("open");
+    scrim.classList.add("open");
+  }
+
+  function closePanel() {
+    panel.classList.remove("open");
+    scrim.classList.remove("open");
+    setTimeout(startCycle, 1500);
+  }
+
+  bubbles.forEach(function (b) {
+    b.addEventListener("click", function () { openPanel("qa", Number(b.dataset.i)); });
+  });
+  document.querySelectorAll(".stack-row[data-i]").forEach(function (row) {
+    row.addEventListener("click", function () { openPanel("qa", Number(row.dataset.i)); });
+  });
+  document.getElementById("stack-ask").addEventListener("click", function () { openPanel("generic"); });
+  launcher.addEventListener("click", function () { openPanel("generic"); });
+  chip.addEventListener("click", function () { openPanel("qa", Number(chip.dataset.next)); });
+  document.getElementById("panel-close").addEventListener("click", closePanel);
+  scrim.addEventListener("click", closePanel);
+
+  setTimeout(startCycle, 2000);
+})();
+</script>
+</body>
+</html>
